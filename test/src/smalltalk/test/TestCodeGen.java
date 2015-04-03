@@ -1,6 +1,5 @@
 package smalltalk.test;
 
-import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Test;
 import smalltalk.Run;
@@ -13,6 +12,13 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 
 public class TestCodeGen extends BaseTest {
+	@Test public void testEmpty() {
+		String input = "";
+		String expecting = "";
+		String result = compile(input);
+		assertEquals(expecting, result);
+	}
+
 	@Test public void testEmptyClass() {
 		String input =
 		"class T [" +
@@ -41,8 +47,9 @@ public class TestCodeGen extends BaseTest {
 			"    literals: \n" +
 			"    0000:  push_local     0, 1\n" +
 			"    0005:  store_local    0, 0\n" +
-			"    0010:  self             \n" +
-			"    0011:  return           \n";
+			"    0010:  pop              \n" +
+			"    0011:  self             \n" +
+			"    0012:  return           \n";
 		String result = compile(input);
 		assertEquals(expecting, result);
 	}
@@ -126,8 +133,87 @@ public class TestCodeGen extends BaseTest {
 			"    literals: \n" +
 			"    0000:  push_local     0, 0\n" +
 			"    0005:  store_field    0\n" +
-			"    0008:  self             \n" +
-			"    0009:  return           \n";
+			"    0008:  pop              \n" +
+			"    0009:  self             \n" +
+			"    0010:  return           \n";
+		String result = compile(input);
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testPopBetweenExpressions() {
+		String input =
+			"class T [\n" +
+			"	|x|\n" +
+			"	foo [|y| x := y. x := y]\n" +
+			"]\n";
+		String expecting =
+			"name: T\n" +
+			"superClass: \n" +
+			"fields: x\n" +
+			"methods:\n" +
+			"    name: foo\n" +
+			"    qualifiedName: T>>foo\n" +
+			"    nargs: 0\n" +
+			"    nlocals: 1\n" +
+			"    literals: \n" +
+			"    0000:  push_local     0, 0\n" +
+			"    0005:  store_field    0\n" +
+			"    0008:  pop              \n" +
+			"    0009:  push_local     0, 0\n" +
+			"    0014:  store_field    0\n" +
+			"    0017:  pop              \n" +
+			"    0018:  self             \n" +
+			"    0019:  return           \n";
+		String result = compile(input);
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testPopBetweenSends() {
+		String input =
+			"false ifTrue: [^99].\n" +
+			"true ifTrue: [^100].\n" +
+			"^1";
+		String expecting =
+			"name: MainClass\n" +
+			"superClass: \n" +
+			"fields: \n" +
+			"methods:\n" +
+			"    name: main\n" +
+			"    qualifiedName: MainClass>>main\n" +
+			"    nargs: 0\n" +
+			"    nlocals: 0\n" +
+			"    literals: 'ifTrue:'\n" +
+			"    0000:  false            \n" +
+			"    0001:  block          0\n" +
+			"    0004:  send           1, 'ifTrue:'\n" +
+			"    0009:  pop              \n" +
+			"    0010:  true             \n" +
+			"    0011:  block          1\n" +
+			"    0014:  send           1, 'ifTrue:'\n" +
+			"    0019:  pop              \n" +
+			"    0020:  push_int       1\n" +
+			"    0025:  return           \n" +
+			"    0026:  pop              \n" +
+			"    0027:  self             \n" +
+			"    0028:  return           \n" +
+			"    blocks:\n" +
+			"        name: main-block0\n" +
+			"        qualifiedName: main>>main-block0\n" +
+			"        nargs: 0\n" +
+			"        nlocals: 0\n" +
+			"        literals: \n" +
+			"        0000:  push_int       99\n" +
+			"        0005:  return           \n" +
+			"        0006:  block_return     \n" +
+			"\n" +
+			"        name: main-block1\n" +
+			"        qualifiedName: main>>main-block1\n" +
+			"        nargs: 0\n" +
+			"        nlocals: 0\n" +
+			"        literals: \n" +
+			"        0000:  push_int       100\n" +
+			"        0005:  return           \n" +
+			"        0006:  block_return     \n";
 		String result = compile(input);
 		assertEquals(expecting, result);
 	}
@@ -152,8 +238,9 @@ public class TestCodeGen extends BaseTest {
 			"    0003:  nil              \n" +
 			"    0004:  send           1, '=='\n" +
 			"    0009:  return           \n" +
-			"    0010:  self             \n" +
-			"    0011:  return           \n";
+			"    0010:  pop              \n" +
+			"    0011:  self             \n" +
+			"    0012:  return           \n";
 		String result = compile(input);
 		assertEquals(expecting, result);
 	}
@@ -176,8 +263,9 @@ public class TestCodeGen extends BaseTest {
 			"    literals: \n" +
 			"    0000:  push_int       100\n" +
 			"    0005:  return           \n" +
-			"    0006:  self             \n" +
-			"    0007:  return           \n" +
+			"    0006:  pop              \n" + // dead code
+			"    0007:  self             \n" + // dead code
+			"    0008:  return           \n" + // dead code
 			"\n" +
 			"    name: foo\n" +
 			"    qualifiedName: T>>foo\n" +
@@ -186,8 +274,9 @@ public class TestCodeGen extends BaseTest {
 			"    literals: \n" +
 			"    0000:  push_int       99\n" +
 			"    0005:  return           \n" +
-			"    0006:  self             \n" +
-			"    0007:  return           \n";
+			"    0006:  pop              \n" + // dead code
+			"    0007:  self             \n" + // dead code
+			"    0008:  return           \n";  // dead code
 		String result = compile(input);
 		assertEquals(expecting, result);
 	}
@@ -213,8 +302,9 @@ public class TestCodeGen extends BaseTest {
 			"    0015:  push_int       10\n" +
 			"    0020:  send           1, '*'\n" +
 			"    0025:  store_local    0, 0\n" +
-			"    0030:  self             \n" +
-			"    0031:  return           \n";
+			"    0030:  pop              \n" +
+			"    0031:  self             \n" +
+			"    0032:  return           \n";
 		String result = compile(input);
 		assertEquals(expecting, result);
 	}
@@ -234,8 +324,9 @@ public class TestCodeGen extends BaseTest {
 			"    literals: \n" +
 			"    0000:  block          0\n" +
 			"    0003:  store_local    0, 0\n" +
-			"    0008:  self             \n" +
-			"    0009:  return           \n" +
+			"    0008:  pop              \n" +
+			"    0009:  self             \n" +
+			"    0010:  return           \n" +
 			"    blocks:\n" +
 			"        name: main-block0\n" +
 			"        qualifiedName: main>>main-block0\n" +
@@ -329,7 +420,6 @@ public class TestCodeGen extends BaseTest {
 		boolean genDbg = false;
 		STSymbolTable symtab = Run.compileCore(genDbg);
 		Run.compile(symtab, "smalltalk/test/linkedlist.st", genDbg);
-		Symbol linkedListSymbol = symtab.GLOBALS.resolve("LinkedList");
 		VirtualMachine vm = new VirtualMachine(symtab);
 		STMetaClassObject linkedListClass = vm.lookupClass("LinkedList");
 		String expectedOutputFileName = Run.getImageURL("smalltalk/test/linkedlist.st-teststring.txt").getFile();

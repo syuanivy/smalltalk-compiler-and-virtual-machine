@@ -14,8 +14,8 @@ methods:
     0016:  block          1
     0019:  dbg 'linkedlist.st', 30:11
     0026:  send           2, 'ifTrue:ifFalse:'
-    0031:  pop              
-    0032:  dbg 'linkedlist.st', 32:3
+    0031:  dbg 'linkedlist.st', 32:3
+    0038:  pop              
     0039:  self             
     0040:  return           
     blocks:
@@ -30,11 +30,12 @@ methods:
         0015:  dbg 'linkedlist.st', 30:35
         0022:  send           1, 'withValue:'
         0027:  store_field    0
-        0030:  dbg 'linkedlist.st', 30:49
-        0037:  push_field     0
-        0040:  store_field    1
-        0043:  dbg 'linkedlist.st', 30:62
-        0050:  block_return     
+        0030:  pop              
+        0031:  dbg 'linkedlist.st', 30:49
+        0038:  push_field     0
+        0041:  store_field    1
+        0044:  dbg 'linkedlist.st', 30:62
+        0051:  block_return     
 
         name: addLast:-block1
         qualifiedName: addLast:>>addLast:-block1
@@ -65,12 +66,14 @@ methods:
     0000:  dbg 'linkedlist.st', 33:15
     0007:  nil              
     0008:  store_field    0
-    0011:  dbg 'linkedlist.st', 33:28
-    0018:  nil              
-    0019:  store_field    1
-    0022:  dbg 'linkedlist.st', 33:40
-    0029:  self             
-    0030:  return           
+    0011:  pop              
+    0012:  dbg 'linkedlist.st', 33:28
+    0019:  nil              
+    0020:  store_field    1
+    0023:  dbg 'linkedlist.st', 33:40
+    0030:  pop              
+    0031:  self             
+    0032:  return           
 
     name: remove:
     qualifiedName: LinkedList>>remove:
@@ -80,16 +83,19 @@ methods:
     0000:  dbg 'linkedlist.st', 46:7
     0007:  nil              
     0008:  store_local    0, 1
-    0013:  dbg 'linkedlist.st', 47:7
-    0020:  push_field     0
-    0023:  store_local    0, 2
-    0028:  block          0
-    0031:  block          1
-    0034:  dbg 'linkedlist.st', 48:16
-    0041:  send           1, 'whileTrue:'
-    0046:  dbg 'linkedlist.st', 60:3
-    0053:  self             
-    0054:  return           
+    0013:  pop              
+    0014:  dbg 'linkedlist.st', 47:7
+    0021:  push_field     0
+    0024:  store_local    0, 2
+    0029:  pop              
+    0030:  block          0
+    0033:  block          1
+    0036:  dbg 'linkedlist.st', 48:16
+    0043:  send           1, 'whileTrue:'
+    0048:  dbg 'linkedlist.st', 60:3
+    0055:  pop              
+    0056:  self             
+    0057:  return           
     blocks:
         name: remove:-block0
         qualifiedName: remove:>>remove:-block0
@@ -121,13 +127,14 @@ methods:
         0050:  dbg 'linkedlist.st', 57:11
         0057:  push_local     1, 2
         0062:  store_local    1, 1
-        0067:  dbg 'linkedlist.st', 58:11
-        0074:  dbg 'linkedlist.st', 58:18
-        0081:  push_local     1, 2
-        0086:  send           0, 'nextLink'
-        0091:  store_local    1, 2
-        0096:  dbg 'linkedlist.st', 59:7
-        0103:  block_return     
+        0067:  pop              
+        0068:  dbg 'linkedlist.st', 58:11
+        0075:  dbg 'linkedlist.st', 58:18
+        0082:  push_local     1, 2
+        0087:  send           0, 'nextLink'
+        0092:  store_local    1, 2
+        0097:  dbg 'linkedlist.st', 59:7
+        0104:  block_return     
 
         name: remove:-block2
         qualifiedName: remove:-block1>>remove:-block2
@@ -142,9 +149,8 @@ methods:
         0021:  block          4
         0024:  dbg 'linkedlist.st', 51:19
         0031:  send           2, 'ifTrue:ifFalse:'
-        0036:  pop              
-        0037:  dbg 'linkedlist.st', 56:11
-        0044:  block_return     
+        0036:  dbg 'linkedlist.st', 56:11
+        0043:  block_return     
 
         name: remove:-block3
         qualifiedName: remove:-block2>>remove:-block3
@@ -199,8 +205,9 @@ methods:
     0003:  dbg 'linkedlist.st', 19:9
     0010:  return           
     0011:  dbg 'linkedlist.st', 19:14
-    0018:  self             
-    0019:  return           
+    0018:  pop              
+    0019:  self             
+    0020:  return           
 
     name: add:
     qualifiedName: LinkedList>>add:
@@ -212,8 +219,9 @@ methods:
     0006:  dbg 'linkedlist.st', 21:17
     0013:  send           1, 'addLast:'
     0018:  dbg 'linkedlist.st', 21:28
-    0025:  self             
-    0026:  return           
+    0025:  pop              
+    0026:  self             
+    0027:  return           
 
     name: removeFirst
     qualifiedName: LinkedList>>removeFirst
@@ -228,8 +236,9 @@ methods:
     0019:  dbg 'linkedlist.st', 35:19
     0026:  send           1, 'ifFalse:'
     0031:  dbg 'linkedlist.st', 39:3
-    0038:  self             
-    0039:  return           
+    0038:  pop              
+    0039:  self             
+    0040:  return           
     blocks:
         name: removeFirst-block0
         qualifiedName: removeFirst>>removeFirst-block0
@@ -241,14 +250,14 @@ methods:
         0014:  push_field     0
         0017:  send           0, 'nextLink'
         0022:  store_field    0
-        0025:  dbg 'linkedlist.st', 37:15
-        0032:  push_field     0
-        0035:  nil              
-        0036:  send           1, '=='
-        0041:  block          1
-        0044:  dbg 'linkedlist.st', 37:21
-        0051:  send           1, 'ifTrue:'
-        0056:  pop              
+        0025:  pop              
+        0026:  dbg 'linkedlist.st', 37:15
+        0033:  push_field     0
+        0036:  nil              
+        0037:  send           1, '=='
+        0042:  block          1
+        0045:  dbg 'linkedlist.st', 37:21
+        0052:  send           1, 'ifTrue:'
         0057:  dbg 'linkedlist.st', 38:7
         0064:  block_return     
 
@@ -275,8 +284,9 @@ methods:
     0016:  dbg 'linkedlist.st', 20:13
     0023:  return           
     0024:  dbg 'linkedlist.st', 20:26
-    0031:  self             
-    0032:  return           
+    0031:  pop              
+    0032:  self             
+    0033:  return           
 
     name: addFirst:
     qualifiedName: LinkedList>>addFirst:
@@ -289,17 +299,19 @@ methods:
     0015:  dbg 'linkedlist.st', 24:17
     0022:  send           1, 'withValue:'
     0027:  store_local    0, 1
-    0032:  push_local     0, 1
-    0037:  push_field     0
-    0040:  dbg 'linkedlist.st', 25:9
-    0047:  send           1, 'nextLink:'
-    0052:  pop              
-    0053:  dbg 'linkedlist.st', 26:7
-    0060:  push_local     0, 1
-    0065:  store_field    0
-    0068:  dbg 'linkedlist.st', 27:3
-    0075:  self             
-    0076:  return           
+    0032:  pop              
+    0033:  push_local     0, 1
+    0038:  push_field     0
+    0041:  dbg 'linkedlist.st', 25:9
+    0048:  send           1, 'nextLink:'
+    0053:  pop              
+    0054:  dbg 'linkedlist.st', 26:7
+    0061:  push_local     0, 1
+    0066:  store_field    0
+    0069:  dbg 'linkedlist.st', 27:3
+    0076:  pop              
+    0077:  self             
+    0078:  return           
 
     name: removeAllSuchThat:
     qualifiedName: LinkedList>>removeAllSuchThat:
@@ -311,8 +323,9 @@ methods:
     0004:  dbg 'linkedlist.st', 42:11
     0011:  send           1, 'do:'
     0016:  dbg 'linkedlist.st', 43:3
-    0023:  self             
-    0024:  return           
+    0023:  pop              
+    0024:  self             
+    0025:  return           
     blocks:
         name: removeAllSuchThat:-block0
         qualifiedName: removeAllSuchThat:>>removeAllSuchThat:-block0
@@ -350,8 +363,9 @@ methods:
     0003:  dbg 'linkedlist.st', 18:10
     0010:  return           
     0011:  dbg 'linkedlist.st', 18:15
-    0018:  self             
-    0019:  return           
+    0018:  pop              
+    0019:  self             
+    0020:  return           
 
     name: do:
     qualifiedName: LinkedList>>do:
@@ -361,13 +375,15 @@ methods:
     0000:  dbg 'linkedlist.st', 63:7
     0007:  push_field     0
     0010:  store_local    0, 1
-    0015:  block          0
-    0018:  block          1
-    0021:  dbg 'linkedlist.st', 64:16
-    0028:  send           1, 'whileTrue:'
-    0033:  dbg 'linkedlist.st', 65:3
-    0040:  self             
-    0041:  return           
+    0015:  pop              
+    0016:  block          0
+    0019:  block          1
+    0022:  dbg 'linkedlist.st', 64:16
+    0029:  send           1, 'whileTrue:'
+    0034:  dbg 'linkedlist.st', 65:3
+    0041:  pop              
+    0042:  self             
+    0043:  return           
     blocks:
         name: do:-block0
         qualifiedName: do:>>do:-block0

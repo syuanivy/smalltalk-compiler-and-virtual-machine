@@ -25,9 +25,10 @@ methods:
         0003:  push_local     1, 0
         0008:  send           1, 'withValue:'
         0013:  store_field    0
-        0016:  push_field     0
-        0019:  store_field    1
-        0022:  block_return     
+        0016:  pop              
+        0017:  push_field     0
+        0020:  store_field    1
+        0023:  block_return     
 
         name: addLast:-block1
         qualifiedName: addLast:>>addLast:-block1
@@ -52,10 +53,12 @@ methods:
     literals: 
     0000:  nil              
     0001:  store_field    0
-    0004:  nil              
-    0005:  store_field    1
-    0008:  self             
-    0009:  return           
+    0004:  pop              
+    0005:  nil              
+    0006:  store_field    1
+    0009:  pop              
+    0010:  self             
+    0011:  return           
 
     name: remove:
     qualifiedName: LinkedList>>remove:
@@ -64,13 +67,16 @@ methods:
     literals: 'whileTrue:'
     0000:  nil              
     0001:  store_local    0, 1
-    0006:  push_field     0
-    0009:  store_local    0, 2
-    0014:  block          0
-    0017:  block          1
-    0020:  send           1, 'whileTrue:'
-    0025:  self             
-    0026:  return           
+    0006:  pop              
+    0007:  push_field     0
+    0010:  store_local    0, 2
+    0015:  pop              
+    0016:  block          0
+    0019:  block          1
+    0022:  send           1, 'whileTrue:'
+    0027:  pop              
+    0028:  self             
+    0029:  return           
     blocks:
         name: remove:-block0
         qualifiedName: remove:>>remove:-block0
@@ -96,10 +102,11 @@ methods:
         0028:  pop              
         0029:  push_local     1, 2
         0034:  store_local    1, 1
-        0039:  push_local     1, 2
-        0044:  send           0, 'nextLink'
-        0049:  store_local    1, 2
-        0054:  block_return     
+        0039:  pop              
+        0040:  push_local     1, 2
+        0045:  send           0, 'nextLink'
+        0050:  store_local    1, 2
+        0055:  block_return     
 
         name: remove:-block2
         qualifiedName: remove:-block1>>remove:-block2
@@ -112,8 +119,7 @@ methods:
         0011:  block          3
         0014:  block          4
         0017:  send           2, 'ifTrue:ifFalse:'
-        0022:  pop              
-        0023:  block_return     
+        0022:  block_return     
 
         name: remove:-block3
         qualifiedName: remove:-block2>>remove:-block3
@@ -157,8 +163,9 @@ methods:
     literals: 
     0000:  push_field     1
     0003:  return           
-    0004:  self             
-    0005:  return           
+    0004:  pop              
+    0005:  self             
+    0006:  return           
 
     name: add:
     qualifiedName: LinkedList>>add:
@@ -168,8 +175,9 @@ methods:
     0000:  self             
     0001:  push_local     0, 0
     0006:  send           1, 'addLast:'
-    0011:  self             
-    0012:  return           
+    0011:  pop              
+    0012:  self             
+    0013:  return           
 
     name: removeFirst
     qualifiedName: LinkedList>>removeFirst
@@ -181,8 +189,9 @@ methods:
     0004:  send           1, '=='
     0009:  block          0
     0012:  send           1, 'ifFalse:'
-    0017:  self             
-    0018:  return           
+    0017:  pop              
+    0018:  self             
+    0019:  return           
     blocks:
         name: removeFirst-block0
         qualifiedName: removeFirst>>removeFirst-block0
@@ -192,12 +201,12 @@ methods:
         0000:  push_field     0
         0003:  send           0, 'nextLink'
         0008:  store_field    0
-        0011:  push_field     0
-        0014:  nil              
-        0015:  send           1, '=='
-        0020:  block          1
-        0023:  send           1, 'ifTrue:'
-        0028:  pop              
+        0011:  pop              
+        0012:  push_field     0
+        0015:  nil              
+        0016:  send           1, '=='
+        0021:  block          1
+        0024:  send           1, 'ifTrue:'
         0029:  block_return     
 
         name: removeFirst-block1
@@ -218,8 +227,9 @@ methods:
     0003:  nil              
     0004:  send           1, '=='
     0009:  return           
-    0010:  self             
-    0011:  return           
+    0010:  pop              
+    0011:  self             
+    0012:  return           
 
     name: addFirst:
     qualifiedName: LinkedList>>addFirst:
@@ -230,14 +240,16 @@ methods:
     0003:  push_local     0, 0
     0008:  send           1, 'withValue:'
     0013:  store_local    0, 1
-    0018:  push_local     0, 1
-    0023:  push_field     0
-    0026:  send           1, 'nextLink:'
-    0031:  pop              
-    0032:  push_local     0, 1
-    0037:  store_field    0
-    0040:  self             
-    0041:  return           
+    0018:  pop              
+    0019:  push_local     0, 1
+    0024:  push_field     0
+    0027:  send           1, 'nextLink:'
+    0032:  pop              
+    0033:  push_local     0, 1
+    0038:  store_field    0
+    0041:  pop              
+    0042:  self             
+    0043:  return           
 
     name: removeAllSuchThat:
     qualifiedName: LinkedList>>removeAllSuchThat:
@@ -247,8 +259,9 @@ methods:
     0000:  self             
     0001:  block          0
     0004:  send           1, 'do:'
-    0009:  self             
-    0010:  return           
+    0009:  pop              
+    0010:  self             
+    0011:  return           
     blocks:
         name: removeAllSuchThat:-block0
         qualifiedName: removeAllSuchThat:>>removeAllSuchThat:-block0
@@ -279,8 +292,9 @@ methods:
     literals: 
     0000:  push_field     0
     0003:  return           
-    0004:  self             
-    0005:  return           
+    0004:  pop              
+    0005:  self             
+    0006:  return           
 
     name: do:
     qualifiedName: LinkedList>>do:
@@ -289,11 +303,13 @@ methods:
     literals: 'whileTrue:'
     0000:  push_field     0
     0003:  store_local    0, 1
-    0008:  block          0
-    0011:  block          1
-    0014:  send           1, 'whileTrue:'
-    0019:  self             
-    0020:  return           
+    0008:  pop              
+    0009:  block          0
+    0012:  block          1
+    0015:  send           1, 'whileTrue:'
+    0020:  pop              
+    0021:  self             
+    0022:  return           
     blocks:
         name: do:-block0
         qualifiedName: do:>>do:-block0

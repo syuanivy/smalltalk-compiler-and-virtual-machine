@@ -66,6 +66,12 @@ public class BaseTest {
 		execAndCheckWithDict(input, expecting, trace, genDbg);
 	}
 
+	public void execAndCheck(String input, String expecting, boolean trace, boolean genDbg) {
+		boolean withLinkedList = false;
+		boolean withDict = false;
+		execAndCheck(input, expecting, withLinkedList, withDict, trace, genDbg);
+	}
+
 	public void execAndCheck(String input, String expecting, boolean genDbg) {
 		boolean withLinkedList = false;
 		boolean trace = false;

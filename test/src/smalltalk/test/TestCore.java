@@ -216,7 +216,7 @@ public class TestCore extends BaseTest {
 	@Test public void testOr() {
 		execAndCheck("^true or: true", "true");
 		execAndCheck("^true or: false", "true");
-		execAndCheck("^false or: true", "true");
+		execAndCheck("^false or: true", "true", true, true);
 		execAndCheck("^false or: false", "false");
 	}
 

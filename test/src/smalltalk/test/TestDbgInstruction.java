@@ -25,8 +25,9 @@ public class TestDbgInstruction extends BaseTest {
 			"    0016:  dbg '<unknown>', 1:0\n" +
 			"    0023:  return           \n" +
 			"    0024:  dbg '<unknown>', 1:7\n" +
-			"    0031:  self             \n" +
-			"    0032:  return           \n";
+			"    0031:  pop              \n" +
+			"    0032:  self             \n" +
+			"    0033:  return           \n";
 		boolean genDbg = true;
 		String result = compile(input, genDbg);
 		assertEquals(expecting, result);
@@ -52,8 +53,9 @@ public class TestDbgInstruction extends BaseTest {
 			"    0006:  dbg '<unknown>', 1:9\n" +
 			"    0013:  send           1, 'ifTrue:'\n" +
 			"    0018:  dbg '<unknown>', 1:20\n" +
-			"    0025:  self             \n" +
-			"    0026:  return           \n" +
+			"    0025:  pop              \n" +
+			"    0026:  self             \n" +
+			"    0027:  return           \n" +
 			"    blocks:\n" +
 			"        name: main-block0\n" +
 			"        qualifiedName: main>>main-block0\n" +
@@ -99,8 +101,9 @@ public class TestDbgInstruction extends BaseTest {
 			"    0010:  nil              \n" +
 			"    0011:  send           1, '=='\n" +
 			"    0016:  dbg '<unknown>', 1:6\n" +
-			"    0023:  self             \n" +
-			"    0024:  return           \n";
+			"    0023:  pop              \n" +
+			"    0024:  self             \n" +
+			"    0025:  return           \n";
 		boolean genDbg = true;
 		String result = compile(input, genDbg);
 		assertEquals(expecting, result);
@@ -123,8 +126,9 @@ public class TestDbgInstruction extends BaseTest {
 			"    0007:  push_int       3\n" +
 			"    0012:  send           0, 'asString'\n" +
 			"    0017:  dbg '<unknown>', 1:10\n" +
-			"    0024:  self             \n" +
-			"    0025:  return           \n";
+			"    0024:  pop              \n" +
+			"    0025:  self             \n" +
+			"    0026:  return           \n";
 		boolean genDbg = true;
 		String result = compile(input, genDbg);
 		assertEquals(expecting, result);
@@ -149,8 +153,9 @@ public class TestDbgInstruction extends BaseTest {
 			"    0013:  dbg '<unknown>', 1:2\n" +
 			"    0020:  send           2, 'to:do:'\n" +
 			"    0025:  dbg '<unknown>', 1:18\n" +
-			"    0032:  self             \n" +
-			"    0033:  return           \n" +
+			"    0032:  pop              \n" +
+			"    0033:  self             \n" +
+			"    0034:  return           \n" +
 			"    blocks:\n" +
 			"        name: main-block0\n" +
 			"        qualifiedName: main>>main-block0\n" +
@@ -191,8 +196,9 @@ public class TestDbgInstruction extends BaseTest {
 			"    0023:  dbg '<unknown>', 1:2\n" +
 			"    0030:  send           2, 'to:do:'\n" +
 			"    0035:  dbg '<unknown>', 1:24\n" +
-			"    0042:  self             \n" +
-			"    0043:  return           \n" +
+			"    0042:  pop              \n" +
+			"    0043:  self             \n" +
+			"    0044:  return           \n" +
 			"    blocks:\n" +
 			"        name: main-block0\n" +
 			"        qualifiedName: main>>main-block0\n" +
@@ -232,13 +238,15 @@ public class TestDbgInstruction extends BaseTest {
 			"    0000:  dbg '<unknown>', 4:2\n" +
 			"    0007:  push_global    'head'\n" +
 			"    0010:  store_local    0, 1\n" +
-			"    0015:  block          0\n" +
-			"    0018:  block          1\n" +
-			"    0021:  dbg '<unknown>', 5:11\n" +
-			"    0028:  send           1, 'whileTrue:'\n" +
-			"    0033:  dbg '<unknown>', 6:1\n" +
-			"    0040:  self             \n" +
-			"    0041:  return           \n" +
+			"    0015:  pop              \n" +
+			"    0016:  block          0\n" +
+			"    0019:  block          1\n" +
+			"    0022:  dbg '<unknown>', 5:11\n" +
+			"    0029:  send           1, 'whileTrue:'\n" +
+			"    0034:  dbg '<unknown>', 6:1\n" +
+			"    0041:  pop              \n" +
+			"    0042:  self             \n" +
+			"    0043:  return           \n" +
 			"    blocks:\n" +
 			"        name: do:-block0\n" +
 			"        qualifiedName: do:>>do:-block0\n" +

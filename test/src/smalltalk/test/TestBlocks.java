@@ -118,9 +118,9 @@ public class TestBlocks extends BaseTest {
 			"^t f value"; // Send f to t then evaluate block that comes back, [^99],
 			        	  // which tries to return from its surrounding method, f, again.
 		String expecting =
-			"BlockCannotReturn: T>>f-block1 can't trigger return again from method T>>f\n"+
-		    "    at                             f-block0>>f-block1[][](<string>:2:19)      executing 0012:  return           \n"+
-		    "    at                          MainClass>>main[a T][a T](<string>:7:3)       executing 0051:  send           0, 'value'\n";
+			"BlockCannotReturn: T>>f-block1 can't trigger return again from method T>>f\n" +
+			"    at                             f-block0>>f-block1[][](<string>:2:19)      executing 0012:  return           \n" +
+			"    at                             MainClass>>main[a T][](<string>:7:3)       executing 0052:  send           0, 'value'\n";
 		String result = "";
 		try {
 			execAndCheck(input, expecting);
