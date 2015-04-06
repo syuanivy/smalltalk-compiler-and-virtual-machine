@@ -92,6 +92,13 @@ public class TestCore extends BaseTest {
 		execAndCheck(input, expecting);
 	}
 
+	@Test public void testArrayLiteralBiggerThanDefaultOperandStackSizeOf10() {
+		String input =
+			"^{1. 2. 3. 4. 5. 6. 7. 8. 9. 1. 2. 3. 4. 5. 6. 7. 8. 9. 1. 2. 3. 4. 5. 6. 7. 8. 9. 1. 2. 3. 4. 5. 6. 7. 8. 9}";
+		String expecting = "{1. 2. 3. 4. 5. 6. 7. 8. 9. 1. 2. 3. 4. 5. 6. 7. 8. 9. 1. 2. 3. 4. 5. 6. 7. 8. 9. 1. 2. 3. 4. 5. 6. 7. 8. 9}";
+		execAndCheck(input, expecting);
+	}
+
 	@Test public void testArrayExprsLiteral() {
 		String input =
 			"^{1. 2+3. 4 asString, $a}";
