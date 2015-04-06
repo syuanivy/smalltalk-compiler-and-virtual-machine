@@ -32,6 +32,27 @@ public class TestCodeGen extends BaseTest {
 		assertEquals(expecting, result);
 	}
 
+	@Test public void testEmptyMethod() {
+		String input =
+		"class T [\n" +
+		"	f [ ]" +
+		"]";
+		String expecting =
+			"name: T\n" +
+			"superClass: \n" +
+			"fields: \n" +
+			"methods:\n" +
+			"    name: f\n" +
+			"    qualifiedName: T>>f\n" +
+			"    nargs: 0\n" +
+			"    nlocals: 0\n" +
+			"    literals: \n" +
+			"    0000:  self             \n" +
+			"    0001:  return           \n";
+		String result = compile(input);
+		assertEquals(expecting, result);
+	}
+
 	@Test public void testAssignToLocalInMain() {
 		String input =
 			"|x y| x := y.";
