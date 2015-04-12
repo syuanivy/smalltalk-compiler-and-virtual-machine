@@ -44,7 +44,7 @@ public class STBlock extends MethodSymbol {
 
 	public int numNestedBlocks;
 
-	public STCompiledBlock compiledMethod;
+	public STCompiledBlock compiledBlock;
 
 	/** Used by subclass STMethod */
 	protected STBlock(String name, ParserRuleContext tree) {

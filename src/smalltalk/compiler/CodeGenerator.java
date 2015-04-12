@@ -69,7 +69,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		}
 		code = code.join(Compiler.push_self());
 		code = code.join(Compiler.method_return());
-		methodNode.scope.compiledMethod = getCompiledBlock(methodNode.scope, code);
+		methodNode.scope.compiledBlock = getCompiledBlock(methodNode.scope, code);
 //		System.out.println(Bytecode.disassemble(methodNode.scope.compiledMethod, 0));
 		return Code.None;
 	}
