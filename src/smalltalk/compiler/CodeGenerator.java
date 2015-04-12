@@ -110,12 +110,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	}
 
 	public int getLiteralIndex(String s) {
-		StringTable stringTable = blockToStrings.get(currentScope);
-		if ( stringTable==null ) {
-			stringTable = new StringTable();
-			blockToStrings.put(currentScope, stringTable);
-		}
-		return stringTable.add(s);
 	}
 
 	public Code dbgAtEndMain(Token t) {
