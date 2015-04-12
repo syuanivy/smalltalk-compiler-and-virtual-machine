@@ -1,7 +1,5 @@
 package smalltalk.vm;
 
-import org.antlr.symtab.Symbol;
-import smalltalk.compiler.STClass;
 import smalltalk.compiler.STMethod;
 import smalltalk.compiler.STSymbolTable;
 import smalltalk.vm.primitive.STMetaClassObject;
@@ -28,8 +26,7 @@ public class SystemDictionary {
 
 	/** Convert the symbol table with classes, methods, and compiled code
 	 *  (as computed by the compiler) into a system dictionary that has
-	 *  meta-objects as well as the necessary predefined objects
-	 *  such as nil.
+	 *  meta-objects.
 	 *
 	 *  This method assumes that the compiler has augmented the symbol table
 	 *  symbols such as {@link STMethod} with pointers to the
