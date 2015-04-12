@@ -14,8 +14,6 @@ import smalltalk.vm.exceptions.UnknownField;
 import smalltalk.vm.exceptions.VMException;
 import smalltalk.vm.primitive.BlockContext;
 import smalltalk.vm.primitive.BlockDescriptor;
-import smalltalk.vm.primitive.MethodContext;
-import smalltalk.vm.primitive.ObjectPool;
 import smalltalk.vm.primitive.Primitive;
 import smalltalk.vm.primitive.STArray;
 import smalltalk.vm.primitive.STBoolean;
@@ -40,10 +38,10 @@ public class VirtualMachine {
 	/** The dictionary of global objects including class meta objects */
 	public final SystemDictionary systemDict; // singleton
 
-	/** "This is the active context itself. It is either a MethodContext
+	/** "This is the active context itself. It is either a BlockContext
 	 *  or a BlockContext." BlueBook p 605 in pdf.
 	 */
-	public MethodContext ctx;
+	public BlockContext ctx;
 
 	/** Trace instructions and show stack during exec? */
 	public boolean trace = false;
@@ -68,7 +66,7 @@ public class VirtualMachine {
 	 */
 	public STObject exec(STObject self, STCompiledBlock method) {
 		ctx = null;
-		MethodContext initialContext = new MethodContext(this, method, self);
+		BlockContext initialContext = new BlockContext(this, method, self);
 		pushContext(initialContext);
 		// fetch-decode-execute loop
 		while ( true ) {
@@ -119,21 +117,59 @@ public class VirtualMachine {
 		error("unknown", msg);
 	}
 
-	public void pushContext(MethodContext ctx) {
+	public void pushContext(BlockContext ctx) {
 		ctx.invokingContext = this.ctx;
 		this.ctx = ctx;
 	}
 
 	public void popContext() { ctx = ctx.invokingContext; }
 
-	public static STObject TranscriptStream_SHOW(MethodContext ctx, int nArgs, Primitive primitive) {
+	public static STObject TranscriptStream_SHOW(BlockContext ctx, int nArgs, Primitive primitive) {
 		VirtualMachine vm = ctx.vm;
-		// ...
-		return null;  // leave receiver for primitive methods
+		vm.assertNumOperands(nArgs + 1); // ensure args + receiver
+		int firstArg = ctx.sp - nArgs + 1;
+		STObject receiverObj = ctx.stack[firstArg - 1];
+		vm.assertEqualBackingTypes(receiverObj, "TranscriptStream");
+		STObject arg = ctx.stack[firstArg];
+		System.out.println(arg.asString());
+		ctx.sp -= nArgs + 1; // pop receiver and arg
+		return receiverObj;  // leave receiver on stack for primitive methods
 	}
 
 	public STMetaClassObject lookupClass(String id) {
 		return systemDict.lookupClass(id);
+	}
+
+	public STObject newInstance(String className, Object ctorArg) {
+		return null;
+	}
+
+	public STObject newInstance(STMetaClassObject metaclass, Object ctorArg) {
+		return null;
+	}
+
+	public STObject newInstance(STMetaClassObject metaclass) {
+		return null;
+	}
+
+	public STInteger newInteger(int v) {
+		return null;
+	}
+
+	public STFloat newFloat(float v) {
+		return null;
+	}
+
+	public STString newString(String s) {
+		return null;
+	}
+
+	public STBoolean newBoolean(boolean b) {
+		return null;
+	}
+
+	public STNil nil() {
+		return new STNil(this);
 	}
 
 	// D e b u g g i n g
@@ -144,32 +180,32 @@ public class VirtualMachine {
 	}
 
 	void traceInstr() {
-		String instr = Bytecode.disassembleInstruction(ctx.method, ctx.ip);
+		String instr = Bytecode.disassembleInstruction(ctx.compiledBlock, ctx.ip);
 		System.out.printf("%-40s", instr);
 	}
 
 	void traceStack() {
-		MethodContext c = ctx;
-		STMetaClassObject enclosingClass = c.method.enclosingClass;
+		BlockContext c = ctx;
+		STMetaClassObject enclosingClass = c.compiledBlock.enclosingClass;
 		String s;
 		if ( enclosingClass!=null ) {
-			s = enclosingClass.name + ">>" + c.method.name + pLocals(c) + pContextWorkStack(c);
+			s = enclosingClass.name + ">>" + c.compiledBlock.name + pLocals(c) + pContextWorkStack(c);
 		}
 		else {
-			s = c.method.qualifiedName + pLocals(c) + pContextWorkStack(c);
+			s = c.compiledBlock.qualifiedName + pLocals(c) + pContextWorkStack(c);
 		}
 		System.out.println(s);
 	}
 
 	public String getVMStackString() {
 		StringBuilder stack = new StringBuilder();
-		MethodContext c = ctx;
+		BlockContext c = ctx;
 		while ( c!=null ) {
 			int ip = c.prev_ip;
 			if ( ip<0 ) ip = c.ip;
-			String instr = Bytecode.disassembleInstruction(c.method, ip);
+			String instr = Bytecode.disassembleInstruction(c.compiledBlock, ip);
 			String location = c.currentFile+":"+c.currentLine+":"+c.currentCharPos;
-			String mctx = c.method.qualifiedName + pLocals(c) + pContextWorkStack(c);
+			String mctx = c.compiledBlock.qualifiedName + pLocals(c) + pContextWorkStack(c);
 			String s = String.format("    at %50s%-20s executing %s\n",
 									 mctx,
 									 String.format("(%s)",location),
@@ -180,7 +216,7 @@ public class VirtualMachine {
 		return stack.toString();
 	}
 
-	String pContextWorkStack(MethodContext ctx) {
+	String pContextWorkStack(BlockContext ctx) {
 		StringBuilder buf = new StringBuilder();
 		buf.append("[");
 		for (int i=0; i<=ctx.sp; i++) {
@@ -191,7 +227,7 @@ public class VirtualMachine {
 		return buf.toString();
 	}
 
-	String pLocals(MethodContext ctx) {
+	String pLocals(BlockContext ctx) {
 		StringBuilder buf = new StringBuilder();
 		buf.append("[");
 		for (int i=0; i<ctx.locals.length; i++) {

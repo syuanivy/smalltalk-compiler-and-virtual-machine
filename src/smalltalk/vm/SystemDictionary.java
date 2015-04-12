@@ -38,7 +38,7 @@ public class SystemDictionary {
 	public void symtabToSystemDictionary(STSymbolTable symtab) {
 	}
 
-	/** Define predefined objects nil, true, false, Transcript. */
+	/** Define predefined object Transcript. */
 	public void initPredefinedObjects() {
 	}
 
