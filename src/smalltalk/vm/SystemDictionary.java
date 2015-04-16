@@ -1,7 +1,7 @@
 package smalltalk.vm;
 
-import smalltalk.compiler.STMethod;
-import smalltalk.compiler.STSymbolTable;
+import smalltalk.compiler.semantics.STMethod;
+import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.primitive.STMetaClassObject;
 import smalltalk.vm.primitive.STObject;
 

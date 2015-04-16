@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import smalltalk.Run;
 import smalltalk.compiler.Compiler;
-import smalltalk.compiler.STSymbolTable;
+import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.VirtualMachine;
 import smalltalk.vm.primitive.STMetaClassObject;
 import smalltalk.vm.primitive.STObject;

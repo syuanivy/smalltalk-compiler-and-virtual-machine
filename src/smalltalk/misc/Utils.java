@@ -1,6 +1,6 @@
 package smalltalk.misc;
 
-import smalltalk.compiler.Code;
+import smalltalk.compiler.codegen.Code;
 
 public class Utils {
 	public static void dumpBytes(byte[] data) {

@@ -39,7 +39,7 @@ public class BlockContext {
 	public static final BlockContext RETURNED = new BlockContext();
 
 	/** In what VM am I executing? */
-	public final VirtualMachine vm;
+	public final VirtualMachine vm = null;
 
 	// ----- STATE OF EXECUTION -----
 
@@ -50,13 +50,13 @@ public class BlockContext {
 	public BlockContext invokingContext;
 
 	/** The receiver of the message that resulted in this context */
-	public final STObject receiver;
+	public final STObject receiver = null;
 
 	/** The compiled code associated with this context */
-	public final STCompiledBlock compiledBlock;
+	public final STCompiledBlock compiledBlock= null;
 
 	/** All arguments and local variables associated with this block */
-	public final STObject[] locals;
+	public final STObject[] locals = null;
 
 	/** The instruction pointer that points into compiledBlock.bytcodes */
 	public int ip = 0;
@@ -148,10 +148,10 @@ public class BlockContext {
 	public int prev_ip = -1; // what was the last instruction? ip points at next to execute not currently executing
 
 	private BlockContext() { // used to just to create RETURNED
-		vm = null;
+/*		vm = null;
 		receiver = null;
 		compiledBlock = null;
-		locals = null;
+		locals = null;*/
 	}
 
 	/** Create a context from a STCompiledBlock and a receiver object */

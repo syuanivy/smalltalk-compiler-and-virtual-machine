@@ -1,9 +1,16 @@
-package smalltalk.compiler;
+package smalltalk.compiler.codegen;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.StringTable;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
+import smalltalk.compiler.*;
+import smalltalk.compiler.Compiler;
+import smalltalk.compiler.codegen.Code;
+import smalltalk.compiler.parser.SmalltalkBaseVisitor;
+import smalltalk.compiler.parser.SmalltalkParser;
+import smalltalk.compiler.semantics.STMethod;
+import smalltalk.vm.primitive.STCompiledBlock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +22,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	public Scope currentScope;
 
 	/** With which compiler are we generating code? */
-	public final Compiler compiler;
+	public final smalltalk.compiler.Compiler compiler;
 
 	public final Map<Scope,StringTable> blockToStrings = new HashMap<>();
 
@@ -74,7 +81,11 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		return Code.None;
 	}
 
-	@Override
+    private STCompiledBlock getCompiledBlock(STMethod scope, Code code) {
+        return null;
+    }
+
+    @Override
 	public Code visitAssign(@NotNull SmalltalkParser.AssignContext ctx) {
 		Code e = visit(ctx.messageExpression());
 		Code store = store(ctx.lvalue().ID().getText());
@@ -85,7 +96,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		return code;
 	}
 
-	@Override
+
+
+    @Override
 	public Code visitReturn(@NotNull SmalltalkParser.ReturnContext ctx) {
 		Code e = visit(ctx.messageExpression());
 		if ( compiler.genDbg ) {

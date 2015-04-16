@@ -1,10 +1,14 @@
-package smalltalk.compiler;
+package smalltalk.compiler.semantics;
 
 import org.antlr.symtab.Scope;
 import org.antlr.v4.runtime.misc.NotNull;
+import smalltalk.compiler.*;
+import smalltalk.compiler.Compiler;
+import smalltalk.compiler.parser.SmalltalkBaseListener;
+import smalltalk.compiler.parser.SmalltalkParser;
 
 public class SetScope extends SmalltalkBaseListener {
-	public final Compiler compiler;
+	public final smalltalk.compiler.Compiler compiler;
 	public Scope currentScope; // block or method
 
 	public SetScope(Compiler compiler) {

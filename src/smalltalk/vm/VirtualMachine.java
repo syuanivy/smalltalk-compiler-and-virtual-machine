@@ -1,6 +1,6 @@
 package smalltalk.vm;
 
-import smalltalk.compiler.STSymbolTable;
+import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.exceptions.BlockCannotReturn;
 import smalltalk.vm.exceptions.IndexOutOfRange;
 import smalltalk.vm.exceptions.InternalVMException;
@@ -15,7 +15,6 @@ import smalltalk.vm.exceptions.VMException;
 import smalltalk.vm.primitive.BlockContext;
 import smalltalk.vm.primitive.BlockDescriptor;
 import smalltalk.vm.primitive.Primitive;
-import smalltalk.vm.primitive.STArray;
 import smalltalk.vm.primitive.STBoolean;
 import smalltalk.vm.primitive.STCompiledBlock;
 import smalltalk.vm.primitive.STFloat;

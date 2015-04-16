@@ -1,4 +1,4 @@
-package smalltalk.compiler;
+package smalltalk.compiler.semantics;
 
 import com.sun.tools.javac.code.Symbol;
 import org.antlr.symtab.MethodSymbol;

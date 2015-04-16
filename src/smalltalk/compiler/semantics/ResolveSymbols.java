@@ -1,8 +1,9 @@
-package smalltalk.compiler;
+package smalltalk.compiler.semantics;
 
 import org.antlr.symtab.VariableSymbol;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
+import smalltalk.compiler.parser.SmalltalkParser;
 
 /** Set the symbol references in the parse tree nodes for ID and lvalues.
  *  Check that the left-hand side of assignments are variables. Other
@@ -11,7 +12,7 @@ import org.antlr.v4.runtime.misc.NotNull;
  *  {@link smalltalk.test.TestIDLookup}.
  */
 public class ResolveSymbols extends SetScope {
-	public ResolveSymbols(Compiler compiler) {
+	public ResolveSymbols(smalltalk.compiler.Compiler compiler) {
 		super(compiler);
 	}
 

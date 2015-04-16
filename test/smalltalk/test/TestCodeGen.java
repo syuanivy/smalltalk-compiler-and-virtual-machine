@@ -3,7 +3,7 @@ package smalltalk.test;
 import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Test;
 import smalltalk.Run;
-import smalltalk.compiler.STSymbolTable;
+import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.VirtualMachine;
 import smalltalk.vm.primitive.STMetaClassObject;
 

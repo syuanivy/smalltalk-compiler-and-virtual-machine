@@ -1,4 +1,4 @@
-package smalltalk.compiler;
+package smalltalk.compiler.codegen;
 
 import smalltalk.misc.ByteList;
 

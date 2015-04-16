@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.xpath.XPath;
 import org.junit.Test;
-import smalltalk.compiler.SmalltalkParser;
+import smalltalk.compiler.parser.SmalltalkParser;
 
 import java.util.ArrayList;
 import java.util.Collection;

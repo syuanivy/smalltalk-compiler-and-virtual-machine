@@ -8,7 +8,7 @@ import java.util.List;
 
 /** */
 public class STArray extends STObject {
-	public final STObject[] elements;
+	public final STObject[] elements = null;
 
 	STArray(VirtualMachine vm, int n, STObject fill) {
 		super(vm.lookupClass("Array"));

@@ -2,8 +2,8 @@ package smalltalk.vm.primitive;
 
 import org.antlr.symtab.Utils;
 import org.stringtemplate.v4.ST;
-import smalltalk.compiler.STBlock;
-import smalltalk.compiler.STPrimitiveMethod;
+import smalltalk.compiler.semantics.STBlock;
+import smalltalk.compiler.semantics.STPrimitiveMethod;
 import smalltalk.vm.Bytecode;
 
 /** This object represents the compiled code for a block or method.
@@ -78,15 +78,15 @@ public class STCompiledBlock {
 	public STCompiledBlock[] blocks;
 
 	/** The fixed number of arguments taken by this method */
-	public final int nargs;
+	public final int nargs = 0;
 
 	/** The number of local variables defined within the block, not including the arguments */
-	public final int nlocals;
+	public final int nlocals = 0;
 
 	/** A pointer to the primitive implementing the method, if this field
 	 *  is non-null.
  	 */
-	public final Primitive primitive;
+	public final Primitive primitive = null;
 
 	public STCompiledBlock(STBlock blk) {
 	}

@@ -1,4 +1,4 @@
-package smalltalk.compiler;
+package smalltalk.compiler.semantics;
 
 import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Symbol;

@@ -4,11 +4,8 @@ import org.antlr.symtab.FieldSymbol;
 import org.antlr.symtab.MethodSymbol;
 import org.stringtemplate.v4.ST;
 import smalltalk.compiler.STClass;
-import smalltalk.compiler.STMethod;
 import smalltalk.vm.VirtualMachine;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

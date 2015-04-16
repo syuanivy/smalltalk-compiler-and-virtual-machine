@@ -1,6 +1,7 @@
-package smalltalk.compiler;
+package smalltalk.compiler.semantics;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import smalltalk.compiler.semantics.STBlock;
 
 /** A Smalltalk method symbol. It's like a block with a name.
  *

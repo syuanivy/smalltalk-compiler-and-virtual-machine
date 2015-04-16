@@ -6,7 +6,11 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import smalltalk.compiler.codegen.Code;
+import smalltalk.compiler.parser.SmalltalkParser;
+import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.misc.Utils;
 import smalltalk.vm.Bytecode;
 
@@ -15,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Compiler {
-	protected final STSymbolTable symtab;
+	public final STSymbolTable symtab;
 	public final List<String> errors = new ArrayList<>();
 	protected SmalltalkParser parser;
 	protected CommonTokenStream tokens;
@@ -39,7 +43,12 @@ public class Compiler {
 		return symtab;
 	}
 
-	// Convenience methods for code gen
+    public ParserRuleContext parseClasses(@NotNull ANTLRInputStream inputStream){return  null;}
+    public void defSymbols(@NotNull ParserRuleContext ctx){}
+    public void resolveSymbols(@NotNull ParserRuleContext ctx){}
+
+
+    // Convenience methods for code gen
 
 	public static Code push_nil() 				{ return Code.of(Bytecode.NIL); }
 	public static Code push_char(int c)			{ return Code.of(Bytecode.PUSH_CHAR).join(Utils.shortToBytes(c)); }
@@ -54,4 +63,16 @@ public class Compiler {
 	public void error(String msg, Exception e) {
 		errors.add(msg+"\n"+ Arrays.toString(e.getStackTrace()));
 	}
+
+    public static Code method_return() {
+        return null;
+    }
+
+    public static Code push_self() {
+        return null;
+    }
+
+    public static Code pop() {
+        return null;
+    }
 }
