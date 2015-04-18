@@ -94,7 +94,7 @@ public class BaseTest {
 		c.genDbg = genDbg;
 		ANTLRInputStream ais = new ANTLRInputStream(input);
 		STSymbolTable symtab = c.compile(ais);
-		VirtualMachine vm = new VirtualMachine(symtab);
+		VirtualMachine vm = new VirtualMachine(symtab, systemDict);
 		for (STObject o : vm.systemDict.getObjects()) {
 			if ( o instanceof STMetaClassObject ) {
 				STMetaClassObject meta = (STMetaClassObject)o;

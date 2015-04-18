@@ -3,7 +3,7 @@ package smalltalk.vm.primitive;
 import org.antlr.symtab.FieldSymbol;
 import org.antlr.symtab.MethodSymbol;
 import org.stringtemplate.v4.ST;
-import smalltalk.compiler.STClass;
+import smalltalk.compiler.semantics.STClass;
 import smalltalk.vm.VirtualMachine;
 
 import java.util.List;
@@ -24,13 +24,17 @@ public class STMetaClassObject extends STObject {
 	public final List<String> fields;
 	public final Map<String,STCompiledBlock> methods;
 
-	STMetaClassObject(VirtualMachine vm, STClass classSymbol) {
+	STMetaClassObject(VirtualMachine vm, STClass classSymbol, String name, STMetaClassObject superClass, List<String> fields, Map<String, STCompiledBlock> methods) {
 		super(null); // metaclass for a metaclass is 'this' but 'this' doesn't exist yet; see override of getSTClass()
 		this.vm = vm;
 		// make space for ALL fields, including inherited ones
 		// for all methods defined in classSymbol, map method name to its compiled method
 		// set enclosingClass for all nested blocks within method
-	}
+        this.name = name;
+        this.superClass = superClass;
+        this.fields = fields;
+        this.methods = methods;
+    }
 
 	@Override
 	public STMetaClassObject getSTClass() {
@@ -57,6 +61,7 @@ public class STMetaClassObject extends STObject {
 	public String getName() { return name; }
 
 	public STCompiledBlock resolveMethod(String name) {
+        return null;
 	}
 
 	public int getNumberOfFields() {

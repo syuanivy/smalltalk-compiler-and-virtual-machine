@@ -59,7 +59,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
 	@Override
 	public Code visitPrimitiveMethodBlock(@NotNull SmalltalkParser.PrimitiveMethodBlockContext ctx) {
-	}
+        return null;
+    }
 
 	@Override
 	public Code visitSmalltalkMethodBlock(@NotNull SmalltalkParser.SmalltalkMethodBlockContext ctx) {
@@ -96,6 +97,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		return code;
 	}
 
+    private Code store(String text) {
+        return null;
+    }
 
 
     @Override
@@ -123,7 +127,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	}
 
 	public int getLiteralIndex(String s) {
-	}
+        return 0;
+    }
 
 	public Code dbgAtEndMain(Token t) {
 		int charPos = t.getCharPositionInLine() + t.getText().length();

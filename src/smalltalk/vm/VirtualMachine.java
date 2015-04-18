@@ -45,15 +45,17 @@ public class VirtualMachine {
 	/** Trace instructions and show stack during exec? */
 	public boolean trace = false;
 
-	public VirtualMachine(STSymbolTable symtab) {
+	public VirtualMachine(STSymbolTable symtab, SystemDictionary systemDict) {
 		// create system dictionary and predefined nil, true, false, Transcript
 		// convert symbol table ClassSymbols to STMetaClassObjects
-	}
+        this.systemDict = systemDict;
+    }
 
 	/** look up MainClass>>main and execute it */
 	public STObject execMain() {
 		// ...
-		return exec(mainObject,main);
+		//return exec(mainObject,main);
+        return null;
 	}
 
 	/** Begin execution of the bytecodes in method relative to a receiver
@@ -69,15 +71,15 @@ public class VirtualMachine {
 		pushContext(initialContext);
 		// fetch-decode-execute loop
 		while ( true ) {
-			if ( trace ) traceInstr(); // show instr first then stack after to show results
-			int op = 0; // ...
-			switch ( op ) {
-				case Bytecode.NIL:
-					break;
-			}
-			if ( trace ) traceStack(); // show stack *after* execution
-		}
-		return ctx!=null ? ctx.receiver : null;
+            if (trace) traceInstr(); // show instr first then stack after to show results
+            int op = 0; // ...
+            switch (op) {
+                case Bytecode.NIL:
+                    break;
+            }
+            if (trace) traceStack(); // show stack *after* execution
+        }
+ 		//return ctx != null ? ctx.receiver : null; // why is ctx.receiver is unreachable statement?
 	}
 
 	public void error(String type, String msg) throws VMException {
@@ -135,7 +137,10 @@ public class VirtualMachine {
 		return receiverObj;  // leave receiver on stack for primitive methods
 	}
 
-	public STMetaClassObject lookupClass(String id) {
+    private void assertEqualBackingTypes(STObject receiverObj, String transcriptStream) {
+    }
+
+    public STMetaClassObject lookupClass(String id) {
 		return systemDict.lookupClass(id);
 	}
 
@@ -253,4 +258,7 @@ public class VirtualMachine {
 			buf.append(r.toString());
 		}
 	}
+
+    public void assertNumOperands(int i) {
+    }
 }

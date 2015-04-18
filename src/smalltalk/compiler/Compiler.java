@@ -75,4 +75,12 @@ public class Compiler {
     public static Code pop() {
         return null;
     }
+
+    public String getFileName() {
+        return null;
+    }
+
+    public static Code dbg(int literalIndex, int line, int charPos) {
+        return null;
+    }
 }

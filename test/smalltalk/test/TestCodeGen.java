@@ -441,7 +441,7 @@ public class TestCodeGen extends BaseTest {
 		boolean genDbg = false;
 		STSymbolTable symtab = Run.compileCore(genDbg);
 		Run.compile(symtab, "smalltalk/test/linkedlist.st", genDbg);
-		VirtualMachine vm = new VirtualMachine(symtab);
+		VirtualMachine vm = new VirtualMachine(symtab, systemDict);
 		STMetaClassObject linkedListClass = vm.lookupClass("LinkedList");
 		String expectedOutputFileName = Run.getImageURL("smalltalk/test/linkedlist.st-teststring.txt").getFile();
 		char[] _expecting = Utils.readFile(expectedOutputFileName);
@@ -457,7 +457,7 @@ public class TestCodeGen extends BaseTest {
 		boolean genDbg = true;
 		STSymbolTable symtab = Run.compileCore(genDbg);
 		Run.compile(symtab, "smalltalk/test/linkedlist.st", genDbg);
-		VirtualMachine vm = new VirtualMachine(symtab);
+		VirtualMachine vm = new VirtualMachine(symtab, systemDict);
 		STMetaClassObject linkedListClass = vm.lookupClass("LinkedList");
 		String expectedOutputFileName = Run.getImageURL("smalltalk/test/linkedlist.st-teststring-dbg.txt").getFile();
 		char[] _expecting = Utils.readFile(expectedOutputFileName);
