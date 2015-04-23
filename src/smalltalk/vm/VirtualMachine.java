@@ -1,5 +1,6 @@
 package smalltalk.vm;
 
+import org.antlr.symtab.Utils;
 import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.exceptions.BlockCannotReturn;
 import smalltalk.vm.exceptions.IndexOutOfRange;
@@ -24,6 +25,10 @@ import smalltalk.vm.primitive.STNil;
 import smalltalk.vm.primitive.STObject;
 import smalltalk.vm.primitive.STString;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /** A VM for a subset of Smalltalk.
  *
  *  3 HUGE simplicity factors in this implementation: we ignore GC,
@@ -45,10 +50,10 @@ public class VirtualMachine {
 	/** Trace instructions and show stack during exec? */
 	public boolean trace = false;
 
-	public VirtualMachine(STSymbolTable symtab, SystemDictionary systemDict) {
+	public VirtualMachine(STSymbolTable symtab) {
 		// create system dictionary and predefined nil, true, false, Transcript
 		// convert symbol table ClassSymbols to STMetaClassObjects
-        this.systemDict = systemDict;
+        this.systemDict = new SystemDictionary(this);//I added this
     }
 
 	/** look up MainClass>>main and execute it */
@@ -188,18 +193,16 @@ public class VirtualMachine {
 		System.out.printf("%-40s", instr);
 	}
 
-	void traceStack() {
-		BlockContext c = ctx;
-		STMetaClassObject enclosingClass = c.compiledBlock.enclosingClass;
-		String s;
-		if ( enclosingClass!=null ) {
-			s = enclosingClass.name + ">>" + c.compiledBlock.name + pLocals(c) + pContextWorkStack(c);
-		}
-		else {
-			s = c.compiledBlock.qualifiedName + pLocals(c) + pContextWorkStack(c);
-		}
-		System.out.println(s);
-	}
+    void traceStack() {
+        BlockContext c = ctx;
+        List<String> a = new ArrayList<>();
+        while ( c!=null ) {
+            a.add( c.toString() );
+            c = c.invokingContext;
+        }
+        Collections.reverse(a);
+        System.out.println(Utils.join(a, ", "));
+    }
 
 	public String getVMStackString() {
 		StringBuilder stack = new StringBuilder();
@@ -220,7 +223,7 @@ public class VirtualMachine {
 		return stack.toString();
 	}
 
-	String pContextWorkStack(BlockContext ctx) {
+	public String pContextWorkStack(BlockContext ctx) {
 		StringBuilder buf = new StringBuilder();
 		buf.append("[");
 		for (int i=0; i<=ctx.sp; i++) {
@@ -231,7 +234,7 @@ public class VirtualMachine {
 		return buf.toString();
 	}
 
-	String pLocals(BlockContext ctx) {
+	public String pLocals(BlockContext ctx) {
 		StringBuilder buf = new StringBuilder();
 		buf.append("[");
 		for (int i=0; i<ctx.locals.length; i++) {
