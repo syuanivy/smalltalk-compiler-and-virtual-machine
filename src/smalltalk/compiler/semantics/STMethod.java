@@ -20,6 +20,7 @@ public class STMethod extends STBlock {
         super(name, tree);
     }
 
+
     public boolean isMethod() { return true; }
 
     @Override

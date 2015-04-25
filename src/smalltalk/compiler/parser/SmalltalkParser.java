@@ -1,16 +1,14 @@
-package smalltalk.compiler.parser;
+// Generated from /Users/Shuai/Dropbox/cs652/smalltalk/syuanivy-smalltalk/src/smalltalk/compiler/parser/Smalltalk.g4 by ANTLR 4.5
 
+package smalltalk.compiler.parser;
+import smalltalk.compiler.semantics.*;
 import org.antlr.symtab.*;
+
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
-import smalltalk.compiler.semantics.STBlock;
-import smalltalk.compiler.semantics.STClass;
-import smalltalk.compiler.semantics.STMethod;
-
-
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -106,6 +104,7 @@ public class SmalltalkParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 	public static class FileContext extends ParserRuleContext {
+		public GlobalScope scope;
 		public MainContext main() {
 			return getRuleContext(MainContext.class,0);
 		}
@@ -175,6 +174,8 @@ public class SmalltalkParser extends Parser {
 
 	public static class ClassDefContext extends ParserRuleContext {
 		public STClass scope;
+		public Token className;
+		public Token superName;
 		public List<TerminalNode> ID() { return getTokens(SmalltalkParser.ID); }
 		public TerminalNode ID(int i) {
 			return getToken(SmalltalkParser.ID, i);
@@ -223,7 +224,7 @@ public class SmalltalkParser extends Parser {
 			setState(55); 
 			match(T__0);
 			setState(56); 
-			match(ID);
+			((ClassDefContext)_localctx).className = match(ID);
 			setState(59);
 			_la = _input.LA(1);
 			if (_la==T__1) {
@@ -231,7 +232,7 @@ public class SmalltalkParser extends Parser {
 				setState(57); 
 				match(T__1);
 				setState(58); 
-				match(ID);
+				((ClassDefContext)_localctx).superName = match(ID);
 				}
 			}
 

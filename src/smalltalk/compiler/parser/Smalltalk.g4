@@ -1,11 +1,16 @@
 grammar Smalltalk;
 
-@header {import org.antlr.symtab.*;}
+@header {
+package smalltalk.compiler.parser;
+import smalltalk.compiler.semantics.*;
+import org.antlr.symtab.*;
+}
 
-file: classDef* main EOF ;
+file returns [GlobalScope scope]
+    : classDef* main EOF ;
 
 classDef returns [STClass scope]
-	:	'class' ID (':' ID)? '[' instanceVars? classMethod* method* ']'
+	:	'class' className = ID (':' superName = ID)? '[' instanceVars? classMethod* method* ']'
 	;
 
 instanceVars : localVars ;
@@ -21,6 +26,7 @@ method returns [STMethod scope]
 	|	bop ID methodBlock					# OperatorMethod
 	|	(KEYWORD ID)+ methodBlock			# KeywordMethod
 	;
+
 
 methodBlock locals [String selector, List<String> args]
 // listeners for rule method can set these locals, rule methodBlock listeners can read

@@ -2,18 +2,19 @@ package smalltalk.compiler;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.VariableSymbol;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import smalltalk.compiler.codegen.Code;
+import smalltalk.compiler.codegen.CodeGenerator;
+import smalltalk.compiler.parser.SmalltalkLexer;
 import smalltalk.compiler.parser.SmalltalkParser;
+import smalltalk.compiler.semantics.DefineSymbols;
 import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.misc.Utils;
 import smalltalk.vm.Bytecode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,11 +36,26 @@ public class Compiler {
 		this.symtab = symtab;
 	}
 
-	public STSymbolTable compile(ANTLRInputStream input) {
+	public STSymbolTable compile(ANTLRInputStream input) throws IOException{
 		// parse class(es)
 		// define symbols
 		// resolve symbols
 		// gen code
+        SmalltalkLexer l = new SmalltalkLexer(input);
+        TokenStream tokens = new CommonTokenStream(l);
+
+        SmalltalkParser parser = new SmalltalkParser(tokens);
+        ParserRuleContext tree = parser.file();
+
+
+        DefineSymbols def = new DefineSymbols(symtab);
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(def, tree);
+
+
+
+        CodeGenerator gen = new CodeGenerator(this);
+        Code file = gen.visit(tree);
 		return symtab;
 	}
 
