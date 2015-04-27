@@ -7,6 +7,7 @@ import smalltalk.compiler.codegen.Code;
 import smalltalk.compiler.parser.SmalltalkLexer;
 import smalltalk.compiler.parser.SmalltalkParser;
 import smalltalk.compiler.semantics.DefineSymbols;
+import smalltalk.compiler.semantics.ResolveSymbols;
 import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.misc.Utils;
 import smalltalk.vm.Bytecode;
@@ -62,7 +63,11 @@ public class Compiler {
         walker.walk(def, ctx);
 
     }
-    public void resolveSymbols(@NotNull ParserRuleContext ctx){}
+    public void resolveSymbols(@NotNull ParserRuleContext ctx){
+        ResolveSymbols res = new ResolveSymbols(this);
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(res, ctx);
+    }
 
 
     // Convenience methods for code gen

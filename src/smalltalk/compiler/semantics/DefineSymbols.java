@@ -27,11 +27,17 @@ public class DefineSymbols extends SmalltalkBaseListener {
 
     @Override
     public void enterClassDef(@NotNull SmalltalkParser.ClassDefContext ctx) {
+        String className = ctx.className.getText();
         String superClass = null;
         if(ctx.superName != null )
             superClass = ctx.superName.getText();
-        else if ( !ctx.className.equals("Object") )
+        else if ( !className.equals("Object") )
             superClass = "Object";
+
+        if ( currentScope.getSymbol(className)!=null || className.equals("MainClass") ) {
+            compiler.error("redefinition of "+className);
+            return;
+        }
 
         STClass c = new STClass(ctx.className.getText(),superClass, compiler.symtab);
         c.setEnclosingScope(currentScope);
@@ -50,6 +56,11 @@ public class DefineSymbols extends SmalltalkBaseListener {
     public void enterLocalVars(@NotNull SmalltalkParser.LocalVarsContext ctx) {
         List<TerminalNode> ids = ctx.ID();
         for(TerminalNode id: ids){
+            if ( currentScope.getSymbol(id.getText())!=null ){
+                compiler.error("redefinition of "+id.getText()+" in "+currentScope.toQualifierString(">>"));
+                return;
+            }
+
             VariableSymbol i;
             if(ctx.getParent() instanceof SmalltalkParser.InstanceVarsContext)  //fields
                 i = new STInstanceVar(id.getText());
@@ -107,7 +118,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         List<TerminalNode> args = ctx.ID();
         ctx.methodBlock().args = new ArrayList<>();
         for(TerminalNode arg : args) {
-            ctx.methodBlock().args.add(arg.getText());
+                ctx.methodBlock().args.add(arg.getText());
         }
     }
 
@@ -115,10 +126,22 @@ public class DefineSymbols extends SmalltalkBaseListener {
     @Override
     public void enterSmalltalkMethodBlock(@NotNull SmalltalkParser.SmalltalkMethodBlockContext ctx) {
         SmalltalkParser.MethodContext methodCtx = (SmalltalkParser.MethodContext)Utils.getAncestor(ctx, SmalltalkParser.RULE_method);
+
+        if ( currentScope.getSymbol(ctx.selector)!=null ) {
+            compiler.error("redefinition of method "+ctx.selector+" in "+currentScope.toQualifierString(">>"));
+            methodCtx.scope = null;
+            return;
+        }
+
         STMethod m = new STMethod(ctx.selector, methodCtx);
         List<String> args = ctx.args;
-        for(String arg: args)
-            m.define(new ParameterSymbol(arg));
+        for(String arg: args){
+            if(m.getSymbol(arg) != null)
+                compiler.error("redefinition of "+arg+" in "+currentScope.toQualifierString(">>")+">>"+m.toQualifierString(">>"));
+            else
+                m.define(new ParameterSymbol(arg));
+        }
+
         currentScope.define(m);
         methodCtx.scope = m;
         currentMethod = m;
@@ -135,6 +158,10 @@ public class DefineSymbols extends SmalltalkBaseListener {
 
     @Override
     public void enterPrimitiveMethodBlock(@NotNull SmalltalkParser.PrimitiveMethodBlockContext ctx) {
+        if ( currentScope.getSymbol(ctx.selector)!=null ) {
+            compiler.error("redefinition of primitive "+ctx.selector+" in "+currentScope.toQualifierString(">>"));
+            return;
+        }
         SmalltalkParser.MethodContext methodCtx = (SmalltalkParser.MethodContext)ctx.getParent();
         String primitive = ctx.SYMBOL().getText().substring(1); //get rid of #
         STPrimitiveMethod m = new STPrimitiveMethod(ctx.selector, methodCtx, primitive);
@@ -144,6 +171,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         m.setEnclosingScope(currentScope);
     }
 
+/*
     @Override
     public void enterLvalue(@NotNull SmalltalkParser.LvalueContext ctx) {
         VariableSymbol v = new VariableSymbol(ctx.ID().getText());
@@ -152,6 +180,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         v.setDefNode(ctx);
     }
 
+*/
 
 
     @Override
@@ -164,6 +193,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         b.setDefNode(ctx);
         b.setEnclosingScope(currentScope);
         currentScope.define(b);
+        ctx.scope = b;
         pushScope(b);
 
     }
@@ -178,6 +208,11 @@ public class DefineSymbols extends SmalltalkBaseListener {
     public void enterBlockArgs(@NotNull SmalltalkParser.BlockArgsContext ctx) {
         List<TerminalNode> args = ctx.ID();
         for(TerminalNode arg : args){
+            if ( currentScope.getSymbol(arg.getText())!=null ){
+                compiler.error("redefinition of "+arg.getText()+" in "+currentScope.toQualifierString(">>"));
+                return;
+            }
+
             ParameterSymbol p = new ParameterSymbol(arg.getText());
             p.setScope(currentScope);
             currentScope.define(p);
