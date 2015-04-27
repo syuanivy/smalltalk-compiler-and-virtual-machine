@@ -65,7 +65,7 @@ public class Run {
         return symtab;
     }
 
-    public static STSymbolTable compileString(STSymbolTable symtab, String input, boolean genDbg) throws IOException {
+    public static STSymbolTable compileString(STSymbolTable symtab, String input, boolean genDbg) {
         Compiler c;
         if ( symtab!=null ) {
             c = new Compiler(symtab);

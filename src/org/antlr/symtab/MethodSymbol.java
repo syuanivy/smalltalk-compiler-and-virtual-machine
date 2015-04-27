@@ -10,14 +10,14 @@ public class MethodSymbol extends FunctionSymbol implements MemberSymbol {
 
 	@Override
 	public int getSlotNumber() { return slot; }
-
+/*
     @Override
     public void setEnclosingScope(Scope s) {
 
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void setScope(Scope scope) {
 
-    }
+    }*/
 }

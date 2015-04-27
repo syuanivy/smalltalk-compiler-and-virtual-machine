@@ -16,7 +16,7 @@ public class STSymbolTable {
 
 	public STSymbolTable() {
         this.GLOBALS = new GlobalScope(null);
-		initPredefinedSymbols();
+		//initPredefinedSymbols();
 	}
 
     public void initPredefinedSymbols() {
