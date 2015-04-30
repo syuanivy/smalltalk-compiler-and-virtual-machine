@@ -27,7 +27,7 @@ public abstract class SymbolWithScope extends BaseScope implements Symbol, Scope
 	 *  using '.' (dot) as the scope separator.
 	 */
 	public String getQualifiedName() {
-		return enclosingScope.getName()+"."+name;
+		return enclosingScope.getName()+">>"+name;
 	}
 
 	/** Return the name prefixed with the name of its enclosing scope. */

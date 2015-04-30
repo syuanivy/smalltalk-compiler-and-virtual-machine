@@ -1,5 +1,7 @@
 package smalltalk.vm;
 
+import org.antlr.symtab.Symbol;
+import smalltalk.compiler.semantics.STClass;
 import smalltalk.compiler.semantics.STMethod;
 import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.primitive.STMetaClassObject;
@@ -33,6 +35,15 @@ public class SystemDictionary {
 	 *  {@link smalltalk.vm.primitive.STCompiledBlock}s.
 	 */
 	public void symtabToSystemDictionary(STSymbolTable symtab) {
+        for(Symbol symbol: symtab.GLOBALS.getSymbols()){
+            if(symbol instanceof STClass){
+                STMetaClassObject metaClassObject = new STMetaClassObject(vm, (STClass)symbol);
+                defineMetaObject(symbol.getName(),metaClassObject);
+            }
+
+        }
+
+
 	}
 
 	/** Define predefined object Transcript. */
@@ -40,17 +51,20 @@ public class SystemDictionary {
 	}
 
 	public STObject lookup(String id) {
-		return null;
+		return objects.get(id);
 	}
 
 	public STMetaClassObject lookupClass(String id) {
-		return null;
+		return (STMetaClassObject)objects.get(id);
 	}
 
 	public void defineMetaObject(String name, STMetaClassObject meta) {
+        objects.put(name, meta);
 	}
 
-	public Collection<STObject> getObjects() { return null; }
+	public Collection<STObject> getObjects() { return objects.values(); }
 
-	public void define(String id, STObject v) { }
+	public void define(String id, STObject v) {
+        objects.put(id, v);
+    }
 }

@@ -1,10 +1,13 @@
 package smalltalk.vm.primitive;
 
-import org.antlr.symtab.Utils;
+import org.antlr.symtab.*;
 import org.stringtemplate.v4.ST;
 import smalltalk.compiler.semantics.STBlock;
+import smalltalk.compiler.semantics.STClass;
 import smalltalk.compiler.semantics.STPrimitiveMethod;
 import smalltalk.vm.Bytecode;
+
+import java.util.List;
 
 /** This object represents the compiled code for a block or method.
  *  It holds all of the bytecode and meta information about the block, such
@@ -78,10 +81,10 @@ public class STCompiledBlock {
 	public STCompiledBlock[] blocks;
 
 	/** The fixed number of arguments taken by this method */
-	public final int nargs = 0;
+	public final int nargs;
 
 	/** The number of local variables defined within the block, not including the arguments */
-	public final int nlocals = 0;
+	public final int nlocals;
 
 	/** A pointer to the primitive implementing the method, if this field
 	 *  is non-null.
@@ -89,6 +92,24 @@ public class STCompiledBlock {
 	public final Primitive primitive = null;
 
 	public STCompiledBlock(STBlock blk) {
+        name = blk.getName();
+        qualifiedName = blk.getQualifiedName();
+        STClass classSymbol = blk.getEnclosingClass(STClass.class);
+        int Nargs = 0;
+        int Nlocals = 0;
+        for(Symbol s: blk.getSymbols()){
+            if(s instanceof ParameterSymbol){
+                Nargs++;
+            }
+            if(s instanceof VariableSymbol){
+                Nlocals++;
+            }
+
+
+        }
+        nargs = Nargs;
+        nlocals = Nlocals;
+
 	}
 
 	public boolean isPrimitive() { return primitive!=null; }

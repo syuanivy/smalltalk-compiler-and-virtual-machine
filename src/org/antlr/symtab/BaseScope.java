@@ -1,5 +1,7 @@
 package org.antlr.symtab;
 
+import smalltalk.compiler.semantics.STClass;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -82,15 +84,26 @@ public abstract class BaseScope implements Scope {
 	 *  your language implementation.
 	 */
 	public MethodSymbol getEnclosingScopeOfType(Class<?> type) {
-		Scope s = this;
-		while ( s!=null ) {
-			if ( s.getClass()==type ) {
-				return (MethodSymbol)s;
-			}
-			s = s.getEnclosingScope();
-		}
-		return null;
-	}
+        Scope s = this;
+        while ( s!=null ) {
+            if ( s.getClass()==type ) {
+                return (MethodSymbol)s;
+            }
+            s = s.getEnclosingScope();
+        }
+        return null;
+    }
+
+    public STClass getEnclosingClass(Class<?> type) {
+        Scope s = this;
+        while ( s!=null ) {
+            if ( s.getClass()==type ) {
+                return (STClass)s;
+            }
+            s = s.getEnclosingScope();
+        }
+        return null;
+    }
 
 	@Override
 	public List<Scope> getEnclosingPathToRoot() {

@@ -35,55 +35,55 @@ import smalltalk.vm.primitive.STMetaClassObject;
  *  method as a block with a name.
  */
 public class STBlock extends MethodSymbol {
-	/** The block number within the surrounding method or block.
-	 *  To push a code block onto the operand stack at runtime,
-	 *  we push use index as an argument of the BLOCK instruction.
-	 *  It's also used to conjure up the method name; see getSelector().
-	 */
-	public final int index;
+    /** The block number within the surrounding method or block.
+     *  To push a code block onto the operand stack at runtime,
+     *  we push use index as an argument of the BLOCK instruction.
+     *  It's also used to conjure up the method name; see getSelector().
+     */
+    public final int index;
 
-	public int numNestedBlocks;
+    public int numNestedBlocks;
 
-	public STCompiledBlock compiledBlock;
+    public STCompiledBlock compiledBlock;
 
-	/** Used by subclass STMethod */
-	protected STBlock(String name, ParserRuleContext tree) {
-		super(name);
-		setDefNode(tree);
-		index = -1;
-	}
+    /** Used by subclass STMethod */
+    protected STBlock(String name, ParserRuleContext tree) {
+        super(name);
+        setDefNode(tree);
+        index = -1;
+    }
 
-	/** Create a block object within a specific method */
-	public STBlock(STMethod method, ParserRuleContext tree) {
-		super(method.getName() + "-block" + method.numNestedBlocks);
-		setDefNode(tree);
-		index = method.numNestedBlocks++;
-	}
+    /** Create a block object within a specific method */
+    public STBlock(STMethod method, ParserRuleContext tree) {
+        super(method.getName() + "-block" + method.numNestedBlocks);
+        setDefNode(tree);
+        index = method.numNestedBlocks++;
+    }
 
-	public boolean isMethod() { return false; }
+    public boolean isMethod() { return false; }
 
-	public String getSelector() {
-		return getName();
-	}
+    public String getSelector() {
+        return getName();
+    }
 
-	public int nargs() { return 0; }
+    public int nargs() { return compiledBlock.nargs; }
 
-	public int nlocals() { return 0; }
+    public int nlocals() { return compiledBlock.nlocals; }
 
-	/** Given the name of a local variable or argument, return the index from 0.
-	 *  The arguments come first and then the locals. For example,
-	 *  at: x put: y [|a| ...]
-	 *  has  indexes x@0, y@1, a@x.
-	 */
-	public int getLocalIndex(String name) {
-		return 0;
-	}
+    /** Given the name of a local variable or argument, return the index from 0.
+     *  The arguments come first and then the locals. For example,
+     *  at: x put: y [|a| ...]
+     *  has  indexes x@0, y@1, a@x.
+     */
+    public int getLocalIndex(String name) {
+        return 0;
+    }
 
-	/** Look for name in current block; keep looking upwards in
-	 *  enclosingScope until found; return how many scopes we had to
-	 *  jump to find name. 0 indicates same scope.
-	 */
-	public int getRelativeScopeCount(String name) {
-		return 0;
-	}
+    /** Look for name in current block; keep looking upwards in
+     *  enclosingScope until found; return how many scopes we had to
+     *  jump to find name. 0 indicates same scope.
+     */
+    public int getRelativeScopeCount(String name) {
+        return 0;
+    }
 }

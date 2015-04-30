@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import smalltalk.compiler.codegen.Code;
+import smalltalk.compiler.codegen.CodeGenerator;
 import smalltalk.compiler.parser.SmalltalkLexer;
 import smalltalk.compiler.parser.SmalltalkParser;
 import smalltalk.compiler.semantics.DefineSymbols;
@@ -32,19 +33,15 @@ public class Compiler {
 	}
 
 	public STSymbolTable compile(ANTLRInputStream input){
+        fileName = input.name;
 		// parse class(es)
-		// define symbols
-
-
         ParserRuleContext tree = parseClasses(input);
+        // define symbols
         defSymbols(tree);
-
         // resolve symbols
-        // gen code
-
-
-      //  CodeGenerator gen = new CodeGenerator(this);
-      //  Code file = gen.visit(tree);
+        resolveSymbols(tree);
+        // gen codes
+        codeGenerate(tree);
 		return symtab;
 	}
 
@@ -68,39 +65,37 @@ public class Compiler {
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(res, ctx);
     }
+    public void codeGenerate(@NotNull ParserRuleContext ctx){
+        CodeGenerator gen = new CodeGenerator(this);
+        gen.visit(ctx);
+    }
 
 
     // Convenience methods for code gen
-
 	public static Code push_nil() 				{ return Code.of(Bytecode.NIL); }
 	public static Code push_char(int c)			{ return Code.of(Bytecode.PUSH_CHAR).join(Utils.shortToBytes(c)); }
 	public static Code push_int(int v) 			{ return Code.of(Bytecode.PUSH_INT).join(Utils.intToBytes(v)); }
+    public static Code method_return() {
+        return Code.of(Bytecode.RETURN);
+    }
+    public static Code push_self() {
+        return Code.of(Bytecode.SELF);
+    }
+    public static Code pop() { return Code.of(Bytecode.POP);}
+
+
+
 
 	// Error support
-
 	public void error(String msg) {
 		errors.add(msg);
 	}
-
 	public void error(String msg, Exception e) {
 		errors.add(msg+"\n"+ Arrays.toString(e.getStackTrace()));
 	}
 
-    public static Code method_return() {
-        return null;
-    }
 
-    public static Code push_self() {
-        return null;
-    }
-
-    public static Code pop() {
-        return null;
-    }
-
-    public String getFileName() {
-        return null;
-    }
+    public String getFileName() {return fileName;}
 
     public static Code dbg(int literalIndex, int line, int charPos) {
         return null;
