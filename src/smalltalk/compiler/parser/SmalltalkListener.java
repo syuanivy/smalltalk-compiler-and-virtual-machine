@@ -343,15 +343,53 @@ public interface SmalltalkListener extends ParseTreeListener {
 	 */
 	void exitId(@NotNull SmalltalkParser.IdContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SmalltalkParser#literal}.
+	 * Enter a parse tree produced by the {@code numberLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
 	 * @param ctx the parse tree
 	 */
-	void enterLiteral(@NotNull SmalltalkParser.LiteralContext ctx);
+	void enterNumberLiteral(@NotNull SmalltalkParser.NumberLiteralContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SmalltalkParser#literal}.
+	 * Exit a parse tree produced by the {@code numberLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
 	 * @param ctx the parse tree
 	 */
-	void exitLiteral(@NotNull SmalltalkParser.LiteralContext ctx);
+	void exitNumberLiteral(@NotNull SmalltalkParser.NumberLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code charLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterCharLiteral(@NotNull SmalltalkParser.CharLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code charLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitCharLiteral(@NotNull SmalltalkParser.CharLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code stringLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringLiteral(@NotNull SmalltalkParser.StringLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code stringLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringLiteral(@NotNull SmalltalkParser.StringLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code predefinedLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterPredefinedLiteral(@NotNull SmalltalkParser.PredefinedLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code predefinedLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitPredefinedLiteral(@NotNull SmalltalkParser.PredefinedLiteralContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SmalltalkParser#array}.
 	 * @param ctx the parse tree
@@ -362,4 +400,64 @@ public interface SmalltalkListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArray(@NotNull SmalltalkParser.ArrayContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code self}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelf(@NotNull SmalltalkParser.SelfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code self}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelf(@NotNull SmalltalkParser.SelfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code nil}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void enterNil(@NotNull SmalltalkParser.NilContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code nil}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void exitNil(@NotNull SmalltalkParser.NilContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code true}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void enterTrue(@NotNull SmalltalkParser.TrueContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code true}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void exitTrue(@NotNull SmalltalkParser.TrueContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code false}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void enterFalse(@NotNull SmalltalkParser.FalseContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code false}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void exitFalse(@NotNull SmalltalkParser.FalseContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code super}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void enterSuper(@NotNull SmalltalkParser.SuperContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code super}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 */
+	void exitSuper(@NotNull SmalltalkParser.SuperContext ctx);
 }

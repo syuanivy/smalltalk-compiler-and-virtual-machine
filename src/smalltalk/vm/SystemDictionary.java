@@ -40,15 +40,15 @@ public class SystemDictionary {
                 STMetaClassObject metaClassObject = new STMetaClassObject(vm, (STClass)symbol);
                 defineMetaObject(symbol.getName(),metaClassObject);
             }
-
         }
-
-
 	}
 
 	/** Define predefined object Transcript. */
 	public void initPredefinedObjects() {
-	}
+        STObject transcript = new STObject(lookupClass("TranscriptStream"));
+        define("Transcript", transcript);
+
+    }
 
 	public STObject lookup(String id) {
 		return objects.get(id);

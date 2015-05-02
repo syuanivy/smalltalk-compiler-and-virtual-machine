@@ -95,6 +95,7 @@ public class TestCodeGen extends BaseTest {
                         "    0012:  self             \n" +
                         "    0013:  return           \n";
         String result = compile(input);
+
         assertEquals(expecting, result);
     }
 

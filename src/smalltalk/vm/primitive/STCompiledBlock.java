@@ -97,12 +97,23 @@ public class STCompiledBlock {
         STClass classSymbol = blk.getEnclosingClass(STClass.class);
         int Nargs = 0;
         int Nlocals = 0;
+        blocks = new STCompiledBlock[blk.numNestedBlocks];
+        blocks = new STCompiledBlock[10];
         for(Symbol s: blk.getSymbols()){
             if(s instanceof ParameterSymbol){
+                s.setInsertionOrderNumber(Nargs);
                 Nargs++;
             }
-            if(s instanceof VariableSymbol){
+            else if(s instanceof FieldSymbol){
+                s.setInsertionOrderNumber(999);
+
+            }
+            else if(s instanceof VariableSymbol){
+                s.setInsertionOrderNumber(Nlocals);
                 Nlocals++;
+            }
+            else if(s instanceof STBlock && ! ((STBlock)s).isMethod()){
+               // blocks[((STBlock)s).index] = getCompiledBlock((STBlock)s);
             }
 
 
@@ -112,7 +123,8 @@ public class STCompiledBlock {
 
 	}
 
-	public boolean isPrimitive() { return primitive!=null; }
+
+    public boolean isPrimitive() { return primitive!=null; }
 
 	public String toTestString() { return getAsString(testStringTemplate); }
 

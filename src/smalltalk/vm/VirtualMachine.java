@@ -46,9 +46,7 @@ public class VirtualMachine {
     public VirtualMachine(STSymbolTable symtab) {
         systemDict = new SystemDictionary(this);
         systemDict.symtabToSystemDictionary(symtab);
-        STObject transcript = new STObject(systemDict.lookupClass("TranscriptStream"));
-        systemDict.define("Transcript", transcript);
-
+        systemDict.initPredefinedObjects();
         // create system dictionary and predefined Transcript
         // convert symbol table ClassSymbols to STMetaClassObjects
     }

@@ -36,8 +36,6 @@ public class ResolveSymbols extends SetScope {
         Symbol v = currentScope.resolve(s);
         boolean res = false;
         if ( v == null ){
-            String print = currentScope.toQualifierString(">>");
-            System.out.println(print);
             compiler.error("unknown variable "+s+" in "+currentScope.toQualifierString(">>"));
         }
 

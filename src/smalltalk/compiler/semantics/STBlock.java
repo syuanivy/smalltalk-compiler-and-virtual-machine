@@ -1,8 +1,8 @@
 package smalltalk.compiler.semantics;
 
-import com.sun.tools.javac.code.Symbol;
 import org.antlr.symtab.MethodSymbol;
 import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import smalltalk.vm.primitive.STCompiledBlock;
 import smalltalk.vm.primitive.STMetaClassObject;
@@ -76,7 +76,8 @@ public class STBlock extends MethodSymbol {
      *  has  indexes x@0, y@1, a@x.
      */
     public int getLocalIndex(String name) {
-        return 0;
+        Symbol s = this.resolve(name);
+        return s.getInsertionOrderNumber();
     }
 
     /** Look for name in current block; keep looking upwards in
@@ -84,6 +85,13 @@ public class STBlock extends MethodSymbol {
      *  jump to find name. 0 indicates same scope.
      */
     public int getRelativeScopeCount(String name) {
-        return 0;
+        int delta = 0;
+        Scope s = this;
+        while(s.getName() != name && s != null){
+            s = s.getEnclosingScope();
+            if (s != null)
+                delta++;
+        }
+        return delta;
     }
 }

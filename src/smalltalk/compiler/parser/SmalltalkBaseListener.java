@@ -381,13 +381,49 @@ public class SmalltalkBaseListener implements SmalltalkListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLiteral(@NotNull SmalltalkParser.LiteralContext ctx) { }
+	@Override public void enterNumberLiteral(@NotNull SmalltalkParser.NumberLiteralContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLiteral(@NotNull SmalltalkParser.LiteralContext ctx) { }
+	@Override public void exitNumberLiteral(@NotNull SmalltalkParser.NumberLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCharLiteral(@NotNull SmalltalkParser.CharLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCharLiteral(@NotNull SmalltalkParser.CharLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStringLiteral(@NotNull SmalltalkParser.StringLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStringLiteral(@NotNull SmalltalkParser.StringLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPredefinedLiteral(@NotNull SmalltalkParser.PredefinedLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPredefinedLiteral(@NotNull SmalltalkParser.PredefinedLiteralContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -400,6 +436,66 @@ public class SmalltalkBaseListener implements SmalltalkListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArray(@NotNull SmalltalkParser.ArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSelf(@NotNull SmalltalkParser.SelfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSelf(@NotNull SmalltalkParser.SelfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNil(@NotNull SmalltalkParser.NilContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNil(@NotNull SmalltalkParser.NilContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTrue(@NotNull SmalltalkParser.TrueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTrue(@NotNull SmalltalkParser.TrueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFalse(@NotNull SmalltalkParser.FalseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFalse(@NotNull SmalltalkParser.FalseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSuper(@NotNull SmalltalkParser.SuperContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSuper(@NotNull SmalltalkParser.SuperContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

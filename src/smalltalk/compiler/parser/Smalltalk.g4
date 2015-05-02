@@ -104,14 +104,22 @@ id returns [Symbol sym] // could be class, field, arg ref etc...
 	;
 
 literal
-	:	NUMBER
-	|	CHAR
-	|	STRING
-	|	'nil' | 'self' | 'true' | 'false'
+	:	NUMBER                               #numberLiteral
+	|	CHAR                                 #charLiteral
+	|	STRING                               #stringLiteral
+	|	predefined                           #predefinedLiteral
 	;
 
 /** Like #(1 2 3) except we can have expressions in array not just literals */
 array : '{' ( messageExpression ('.' messageExpression)* '.'? )? '}' ;
+
+predefined
+    :   SELF
+    |   NIL
+    |   TRUE
+    |   FALSE
+    |   SUPER
+    ;
 
 SELF   : 'self' ;
 SUPER  : 'super' ;

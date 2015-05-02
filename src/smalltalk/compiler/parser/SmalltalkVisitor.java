@@ -211,15 +211,72 @@ public interface SmalltalkVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitId(@NotNull SmalltalkParser.IdContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SmalltalkParser#literal}.
+	 * Visit a parse tree produced by the {@code numberLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLiteral(@NotNull SmalltalkParser.LiteralContext ctx);
+	T visitNumberLiteral(@NotNull SmalltalkParser.NumberLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code charLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCharLiteral(@NotNull SmalltalkParser.CharLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code stringLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringLiteral(@NotNull SmalltalkParser.StringLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code predefinedLiteral}
+	 * labeled alternative in {@link SmalltalkParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPredefinedLiteral(@NotNull SmalltalkParser.PredefinedLiteralContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SmalltalkParser#array}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitArray(@NotNull SmalltalkParser.ArrayContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code self}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelf(@NotNull SmalltalkParser.SelfContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code nil}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNil(@NotNull SmalltalkParser.NilContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code true}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTrue(@NotNull SmalltalkParser.TrueContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code false}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFalse(@NotNull SmalltalkParser.FalseContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code super}
+	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSuper(@NotNull SmalltalkParser.SuperContext ctx);
 }

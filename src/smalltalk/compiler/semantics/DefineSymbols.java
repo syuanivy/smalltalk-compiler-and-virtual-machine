@@ -134,13 +134,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         }
 
         STMethod m = new STMethod(ctx.selector, methodCtx);
-        List<String> args = ctx.args;
-        for(String arg: args){
-            if(m.getSymbol(arg) != null)
-                compiler.error("redefinition of "+arg+" in "+currentScope.toQualifierString(">>")+">>"+m.toQualifierString(">>"));
-            else
-                m.define(new ParameterSymbol(arg));
-        }
+        defineArgs(ctx, m);
 
         currentScope.define(m);
         methodCtx.scope = m;
@@ -148,6 +142,16 @@ public class DefineSymbols extends SmalltalkBaseListener {
         m.setEnclosingScope(currentScope);
         pushScope(m);
 
+    }
+
+    private void defineArgs(SmalltalkParser.MethodBlockContext ctx, STMethod m) {
+        List<String> args = ctx.args;
+        for(String arg: args){
+            if(m.getSymbol(arg) != null)
+                compiler.error("redefinition of "+arg+" in "+currentScope.toQualifierString(">>")+">>"+m.toQualifierString(">>"));
+            else
+                m.define(new ParameterSymbol(arg));
+        }
     }
 
     @Override
@@ -166,6 +170,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         String primitive = ctx.SYMBOL().getText().substring(1); //get rid of #
         STPrimitiveMethod m = new STPrimitiveMethod(ctx.selector, methodCtx, primitive);
         currentScope.define(m);
+        defineArgs(ctx,m);
         methodCtx.scope = m;
         currentMethod = m;
         m.setEnclosingScope(currentScope);
@@ -185,6 +190,19 @@ public class DefineSymbols extends SmalltalkBaseListener {
 
     @Override
     public void enterBlock(@NotNull SmalltalkParser.BlockContext ctx) {
+/*
+       STBlock existingMethod =  (STBlock)currentScope.resolve(currentMethod.getName());
+        STBlock exisitingBlock = (STBlock)currentScope.resolve(currentMethod.getName()+ "-block" + currentMethod.numNestedBlocks);
+        if(existingMethod != null || exisitingBlock != null){
+            compiler.error("redefinition of " + currentMethod.getName()+ currentScope.toQualifierString(">>"));
+            if(existingMethod != null)
+                pushScope(existingMethod);
+            else
+                pushScope(exisitingBlock);
+            return;
+        }
+*/
+
         STBlock b;
         if(currentScope instanceof STMethod)
             b = new STBlock(currentMethod, ctx);
