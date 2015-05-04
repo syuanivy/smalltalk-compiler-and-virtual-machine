@@ -97,8 +97,7 @@ public class STCompiledBlock {
         STClass classSymbol = blk.getEnclosingClass(STClass.class);
         int Nargs = 0;
         int Nlocals = 0;
-        blocks = new STCompiledBlock[blk.numNestedBlocks];
-        blocks = new STCompiledBlock[10];
+
         for(Symbol s: blk.getSymbols()){
             if(s instanceof ParameterSymbol){
                 s.setInsertionOrderNumber(Nargs);
@@ -112,14 +111,19 @@ public class STCompiledBlock {
                 s.setInsertionOrderNumber(Nlocals);
                 Nlocals++;
             }
-            else if(s instanceof STBlock && ! ((STBlock)s).isMethod()){
-               // blocks[((STBlock)s).index] = getCompiledBlock((STBlock)s);
-            }
-
-
         }
         nargs = Nargs;
         nlocals = Nlocals;
+
+        blocks = new STCompiledBlock[blk.numNestedBlocks];
+        if(blk.isMethod()){
+            List<Scope> list = blk.getAllNestedScopes();
+            int i = 0;
+            for(Scope o : list){
+                if(o instanceof STBlock)
+                    blocks[i++] = ((STBlock) o).compiledBlock;
+            }
+        }
 
 	}
 

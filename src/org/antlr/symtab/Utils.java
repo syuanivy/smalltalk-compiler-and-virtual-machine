@@ -2,6 +2,7 @@ package org.antlr.symtab;
 
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import smalltalk.vm.primitive.STCompiledBlock;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -147,6 +148,7 @@ public class Utils {
 	public static <T,R> List<R> map(Collection<T> data, Function<T,R> getter) {
 		List<R> output = new ArrayList<>();
 		if ( data!=null ) for (T x : data) {
+            STCompiledBlock blk = (STCompiledBlock) x;
 			output.add(getter.apply(x));
 		}
 		return output;
@@ -154,9 +156,13 @@ public class Utils {
 
 	public static <T,R> List<R> map(T[] data, Function<T,R> getter) {
 		List<R> output = new ArrayList<>();
-		if ( data!=null ) for (T x : data) {
-			output.add(getter.apply(x));
-		}
+		if ( data!=null ) {
+            for (T x : data) {
+                STCompiledBlock blk = (STCompiledBlock) x;
+                output.add(getter.apply(x));
+            }
+        }
+
 		return output;
 	}
 

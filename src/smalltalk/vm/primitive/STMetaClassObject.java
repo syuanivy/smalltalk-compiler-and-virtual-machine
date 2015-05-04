@@ -7,10 +7,7 @@ import smalltalk.compiler.semantics.STClass;
 import smalltalk.compiler.semantics.STMethod;
 import smalltalk.vm.VirtualMachine;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.antlr.symtab.Utils.map;
 
@@ -91,6 +88,7 @@ public class STMetaClassObject extends STObject {
         template.add("methods", map(methods.values(), STCompiledBlock::toTestString));
         return template.render();
     }
+
 
     @Override
     public String toString() {

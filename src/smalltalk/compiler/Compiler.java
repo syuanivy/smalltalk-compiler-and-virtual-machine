@@ -78,8 +78,14 @@ public class Compiler {
     public static Code method_return() {
         return Code.of(Bytecode.RETURN);
     }
+    public static Code block_return(){
+        return Code.of(Bytecode.BLOCK_RETURN);
+    }
     public static Code push_self() {
         return Code.of(Bytecode.SELF);
+    }
+    public static Code block(STBlock blk){
+        return Code.of(Bytecode.BLOCK).join(Utils.shortToBytes(blk.index));
     }
     public static Code pop() { return Code.of(Bytecode.POP);}
     public static Code store(String text, Scope current) {
@@ -107,27 +113,27 @@ public class Compiler {
         }
         else if(s instanceof  FieldSymbol){
             int index = ((STClass)s.getScope()).getFieldIndex(text);
-            code = Code.of(Bytecode.PUSH_FIELD).join(Utils.shortToBytes(index));
+            code = Code.of(Bytecode.PUSH_FIELD).join(Utils.toLiteral(index));
         }
         else if(s instanceof ParameterSymbol){
             int index = ((STBlock)s.getScope()).getLocalIndex(text);
             int delta = ((STBlock)current).getRelativeScopeCount(s.getScope().getName());
-            code = Code.of(Bytecode.PUSH_LOCAL).join(Utils.shortToBytes(delta).join(Utils.shortToBytes(index)));
+            code = Code.of(Bytecode.PUSH_LOCAL).join(Utils.toLiteral(delta).join(Utils.toLiteral(index)));
         }
         else if (s instanceof VariableSymbol){
             int index = ((STBlock)s.getScope()).getLocalIndex(text);
             int delta = ((STBlock)current).getRelativeScopeCount(s.getScope().getName());
-            code = Code.of(Bytecode.PUSH_LOCAL).join(Utils.shortToBytes(delta).join(Utils.shortToBytes(index)));
+            code = Code.of(Bytecode.PUSH_LOCAL).join(Utils.toLiteral(delta).join(Utils.toLiteral(index)));
         }
         else if(s instanceof STClass){
             gen.blockToStrings.get(current).add(s.getName());
-            code = Code.of(Bytecode.PUSH_GLOBAL).join(Utils.shortToBytes(gen.getLiteralIndex(text)));
+            code = Code.of(Bytecode.PUSH_GLOBAL).join(Utils.toLiteral(gen.getLiteralIndex(text)));
         }
         return code;
     }
 
     public static Code push_literal(ParserRuleContext ctx, Scope current, CodeGenerator gen) {
-        Code code;
+        Code code = Code.None;
         if(ctx instanceof SmalltalkParser.PredefinedLiteralContext){
             SmalltalkParser.PredefinedContext p = ((SmalltalkParser.PredefinedLiteralContext) ctx).predefined();
             code = push_predefined(p);
@@ -141,8 +147,6 @@ public class Compiler {
 
             code = push_string(text, current, gen);
         }
-        else
-            return Code.None;
         return code;
     }
     public static Code push_string(String text, Scope current, CodeGenerator gen){

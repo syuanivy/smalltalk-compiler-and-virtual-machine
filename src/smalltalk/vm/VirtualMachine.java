@@ -41,7 +41,7 @@ public class VirtualMachine {
     public BlockContext ctx;
 
     /** Trace instructions and show stack during exec? */
-    public boolean trace = false;
+    public boolean trace = true;
 
     public VirtualMachine(STSymbolTable symtab) {
         systemDict = new SystemDictionary(this);
