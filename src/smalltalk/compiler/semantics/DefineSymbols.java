@@ -156,7 +156,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
 
     @Override
     public void exitSmalltalkMethodBlock(@NotNull SmalltalkParser.SmalltalkMethodBlockContext ctx) {
-        if(Utils.getAncestor(ctx, SmalltalkParser.RULE_method) != null)
+        if(((SmalltalkParser.MethodContext)Utils.getAncestor(ctx, SmalltalkParser.RULE_method)).scope != null)
             popScope();
     }
 
@@ -190,30 +190,17 @@ public class DefineSymbols extends SmalltalkBaseListener {
 
     @Override
     public void enterBlock(@NotNull SmalltalkParser.BlockContext ctx) {
-/*
-       STBlock existingMethod =  (STBlock)currentScope.resolve(currentMethod.getName());
-        STBlock exisitingBlock = (STBlock)currentScope.resolve(currentMethod.getName()+ "-block" + currentMethod.numNestedBlocks);
-        if(existingMethod != null || exisitingBlock != null){
-            compiler.error("redefinition of " + currentMethod.getName()+ currentScope.toQualifierString(">>"));
-            if(existingMethod != null)
-                pushScope(existingMethod);
-            else
-                pushScope(exisitingBlock);
+        STBlock b;
+        b = new STBlock(currentMethod, ctx);
+        if(currentScope.resolve(b.getSelector()) != null){
+            compiler.error("redefinition of symbol "+b.getSelector()+" in "+currentScope.toQualifierString(">>"));
             return;
         }
-*/
-
-        STBlock b;
-        if(currentScope instanceof STMethod)
-            b = new STBlock(currentMethod, ctx);
-        else
-            b = new STBlock(currentMethod.getName(), ctx);
         b.setDefNode(ctx);
         b.setEnclosingScope(currentScope);
         currentScope.define(b);
         ctx.scope = b;
         pushScope(b);
-
     }
 
     @Override
@@ -263,9 +250,13 @@ public class DefineSymbols extends SmalltalkBaseListener {
 
     private void pushScope(Scope s) {
         currentScope = s;
+       // System.out.println("pushing :"+currentScope.getName());
     }
 
     private void popScope() {
+      //  System.out.println("poping :"+currentScope.getName());
         currentScope = currentScope.getEnclosingScope();
+      //  System.out.println("currentScope :"+currentScope.getName());
+
     }
 }

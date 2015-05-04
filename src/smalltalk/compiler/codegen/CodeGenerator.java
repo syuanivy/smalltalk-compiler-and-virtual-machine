@@ -2,17 +2,18 @@ package smalltalk.compiler.codegen;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.StringTable;
+
 import org.antlr.v4.runtime.tree.TerminalNode;
-import smalltalk.compiler.semantics.STBlock;
-import smalltalk.misc.Utils;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
-import smalltalk.compiler.*;
-import smalltalk.compiler.Compiler;
-import smalltalk.compiler.codegen.Code;
+
 import smalltalk.compiler.parser.SmalltalkBaseVisitor;
 import smalltalk.compiler.parser.SmalltalkParser;
-import smalltalk.compiler.semantics.STMethod;
+import smalltalk.compiler.Compiler;
+import smalltalk.compiler.semantics.STBlock;
+import smalltalk.misc.Utils;
+
+
 import smalltalk.vm.Bytecode;
 import smalltalk.vm.primitive.STCompiledBlock;
 
@@ -69,20 +70,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		pushScope(ctx.scope);
 		Code code = visitChildren(ctx);
 		popScope();
-		return code;
+		return Code.None;
 	}
-
-    @Override
-    public Code visitInstanceVars(@NotNull SmalltalkParser.InstanceVarsContext ctx) {
-        return Code.None;
-    }
-
-    @Override
-    public Code visitClassMethod(@NotNull SmalltalkParser.ClassMethodContext ctx) {
-        return Code.None;
-    }
-
-
 
     @Override
     public Code visitMain(@NotNull SmalltalkParser.MainContext ctx) {
@@ -100,7 +89,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, code);
         popScope();
         popScope();
-        return super.visitMain(ctx);
+        return Code.None;
     }
 
     @Override
@@ -179,25 +168,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return Code.of(Bytecode.SEND).join(Utils.shortToBytes(numOfArgs)).join(Utils.shortToBytes(index));
     }
 
-    private Code sendArgs(List<SmalltalkParser.BinaryExpressionContext> args) {
-       // Code code = Code.None;
-       // for(SmalltalkParser.BinaryExpressionContext arg: args){
-        Code code = Compiler.push_string(args.get(0).getText(), currentScope, this);
-       // }
-        return code;
-    }
-/*
     @Override
-    public Code visitSuperKeywordSend(@NotNull SmalltalkParser.SuperKeywordSendContext ctx) {
-
-        Code pushSuper = Compiler.push_literal("super", currentScope, this);
-        Code receiver = visit(ctx.binaryExpression(0));
-        Code keyword = visit(ctx.KEYWORD(0));
-        Code sendMsg = sendKeywordMsg(ctx.args);
-        Code code = pushSuper.join(receiver,keyword,sendMsg);
-
-        return code;
-    }*/
+    public Code visitUnaryMsgSend(@NotNull SmalltalkParser.UnaryMsgSendContext ctx) {
+        Code unary = visit(ctx.unaryExpression());
+        Code send = send(0,ctx.ID().getText());
+        return unary.join(send);
+    }
 
     @Override
 	public Code visitPrimitiveMethodBlock(@NotNull SmalltalkParser.PrimitiveMethodBlockContext ctx) {
@@ -205,7 +181,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         Code code = visitChildren(ctx);
         methodNode.scope.compiledBlock = getCompiledBlock(methodNode.scope, code);
         return code;
-
     }
 
 	@Override
@@ -215,7 +190,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		Code code = new Code();
         if(ctx.body() instanceof SmalltalkParser.EmptyBodyContext)
              code = visitEmptyBody((SmalltalkParser.EmptyBodyContext)ctx.body());
-     //   code = visitChildren(ctx);
 		// always add ^self in case no return statement
 		if ( compiler.genDbg ) { // put dbg in front of push_self
 			code = Code.join(code, dbgAtEndBlock(ctx.stop));
@@ -298,7 +272,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         //append all arg+send.
         List<SmalltalkParser.BopContext> ops = ctx.bop();
         List<SmalltalkParser.UnaryExpressionContext> args = ctx.unaryExpression();
-        String keyword;
         for(int i = 0; i < ops.size(); i++){
             Code arg = visit(args.get(i+1));//args[0] dedicated to receiver
             Code send = sendBop(ops.get(i));

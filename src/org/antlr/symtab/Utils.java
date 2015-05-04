@@ -148,7 +148,6 @@ public class Utils {
 	public static <T,R> List<R> map(Collection<T> data, Function<T,R> getter) {
 		List<R> output = new ArrayList<>();
 		if ( data!=null ) for (T x : data) {
-            STCompiledBlock blk = (STCompiledBlock) x;
 			output.add(getter.apply(x));
 		}
 		return output;
@@ -158,7 +157,6 @@ public class Utils {
 		List<R> output = new ArrayList<>();
 		if ( data!=null ) {
             for (T x : data) {
-                STCompiledBlock blk = (STCompiledBlock) x;
                 output.add(getter.apply(x));
             }
         }

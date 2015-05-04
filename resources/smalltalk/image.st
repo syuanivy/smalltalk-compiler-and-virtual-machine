@@ -215,5 +215,7 @@ class ReadStream : Stream [
 ]
 
 class TranscriptStream : WriteStream [
+
+
     show: o <primitive:#TranscriptStream_SHOW>
 ]
