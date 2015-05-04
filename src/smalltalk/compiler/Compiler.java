@@ -193,6 +193,6 @@ public class Compiler {
     public String getFileName() {return fileName;}
 
     public static Code dbg(int literalIndex, int line, int charPos) {
-        return null;
+        return Code.of(Bytecode.DBG).join(Utils.shortToBytes(literalIndex)).join(Utils.intToBytes(Bytecode.combineLineCharPos(line, charPos)));
     }
 }
