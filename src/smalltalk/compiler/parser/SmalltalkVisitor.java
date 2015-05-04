@@ -245,38 +245,9 @@ public interface SmalltalkVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArray(@NotNull SmalltalkParser.ArrayContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code self}
-	 * labeled alternative in {@link SmalltalkParser#predefined}.
+	 * Visit a parse tree produced by {@link SmalltalkParser#predefined}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSelf(@NotNull SmalltalkParser.SelfContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code nil}
-	 * labeled alternative in {@link SmalltalkParser#predefined}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNil(@NotNull SmalltalkParser.NilContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code true}
-	 * labeled alternative in {@link SmalltalkParser#predefined}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTrue(@NotNull SmalltalkParser.TrueContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code false}
-	 * labeled alternative in {@link SmalltalkParser#predefined}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFalse(@NotNull SmalltalkParser.FalseContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code super}
-	 * labeled alternative in {@link SmalltalkParser#predefined}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSuper(@NotNull SmalltalkParser.SuperContext ctx);
+	T visitPredefined(@NotNull SmalltalkParser.PredefinedContext ctx);
 }

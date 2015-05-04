@@ -441,61 +441,13 @@ public class SmalltalkBaseListener implements SmalltalkListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSelf(@NotNull SmalltalkParser.SelfContext ctx) { }
+	@Override public void enterPredefined(@NotNull SmalltalkParser.PredefinedContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSelf(@NotNull SmalltalkParser.SelfContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNil(@NotNull SmalltalkParser.NilContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNil(@NotNull SmalltalkParser.NilContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTrue(@NotNull SmalltalkParser.TrueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTrue(@NotNull SmalltalkParser.TrueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFalse(@NotNull SmalltalkParser.FalseContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFalse(@NotNull SmalltalkParser.FalseContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSuper(@NotNull SmalltalkParser.SuperContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSuper(@NotNull SmalltalkParser.SuperContext ctx) { }
+	@Override public void exitPredefined(@NotNull SmalltalkParser.PredefinedContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

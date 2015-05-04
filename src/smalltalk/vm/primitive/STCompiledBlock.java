@@ -91,8 +91,11 @@ public class STCompiledBlock {
  	 */
 	public final Primitive primitive = null;
 
-	public STCompiledBlock(STBlock blk) {
-        name = blk.getName();
+	public STCompiledBlock(STBlock blk, Boolean isClassMethod) {
+        if(isClassMethod)
+            name = "static " + blk.getName();
+        else
+            name = blk.getName();
         qualifiedName = blk.getQualifiedName();
         STClass classSymbol = blk.getEnclosingClass(STClass.class);
         int Nargs = 0;

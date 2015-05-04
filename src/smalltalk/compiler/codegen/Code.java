@@ -30,6 +30,7 @@ public class Code extends ByteList { // just an alias
 		for (int i=0; i<bytes.n; i++) {
 			add(bytes.elements[i]);
 		}
+
 		return this;
 	}
 }

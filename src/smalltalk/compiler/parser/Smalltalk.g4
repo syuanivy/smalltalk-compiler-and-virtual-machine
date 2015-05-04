@@ -118,7 +118,6 @@ predefined
     |   NIL
     |   TRUE
     |   FALSE
-    |   SUPER
     ;
 
 SELF   : 'self' ;

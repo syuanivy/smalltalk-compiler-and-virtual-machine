@@ -136,7 +136,7 @@ public class Compiler {
         Code code = Code.None;
         if(ctx instanceof SmalltalkParser.PredefinedLiteralContext){
             SmalltalkParser.PredefinedContext p = ((SmalltalkParser.PredefinedLiteralContext) ctx).predefined();
-            code = push_predefined(p);
+            code = push_predefined(p.getText());
         }
         else if(ctx instanceof SmalltalkParser.NumberLiteralContext){
             int num = Integer.parseInt(((SmalltalkParser.NumberLiteralContext) ctx).NUMBER().getText());
@@ -160,9 +160,8 @@ public class Compiler {
         return code;
     }
 
-    private static Code push_predefined(SmalltalkParser.PredefinedContext pre) {
+    public static Code push_predefined(String p) {
         Code code;
-        String p = pre.getText();
         if(p.equals("self"))
             code = Code.of(Bytecode.SELF);
         else if(p.equals("super"))
