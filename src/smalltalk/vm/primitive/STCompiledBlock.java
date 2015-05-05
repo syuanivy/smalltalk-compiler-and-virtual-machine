@@ -96,7 +96,7 @@ public class STCompiledBlock {
             name = "static " + blk.getName();
         else
             name = blk.getName();
-        qualifiedName = blk.getQualifiedName();
+        qualifiedName = blk.getQualifiedName(">>");
         STClass classSymbol = blk.getEnclosingClass(STClass.class);
         int Nargs = 0;
         int Nlocals = 0;

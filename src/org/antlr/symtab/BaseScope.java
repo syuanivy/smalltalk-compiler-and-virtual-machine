@@ -94,16 +94,6 @@ public abstract class BaseScope implements Scope {
         return null;
     }
 
-    public STClass getEnclosingClass(Class<?> type) {
-        Scope s = this;
-        while ( s!=null ) {
-            if ( s.getClass()==type ) {
-                return (STClass)s;
-            }
-            s = s.getEnclosingScope();
-        }
-        return null;
-    }
 
 	@Override
 	public List<Scope> getEnclosingPathToRoot() {

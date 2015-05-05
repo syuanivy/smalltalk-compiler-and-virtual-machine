@@ -94,4 +94,15 @@ public class STBlock extends MethodSymbol {
         }
         return delta;
     }
+
+    public STClass getEnclosingClass(Class<?> type) {
+        Scope s = this;
+        while ( s!=null ) {
+            if ( s.getClass()==type ) {
+                return (STClass)s;
+            }
+            s = s.getEnclosingScope();
+        }
+        return null;
+    }
 }

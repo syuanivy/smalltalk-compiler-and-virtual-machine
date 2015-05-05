@@ -108,7 +108,7 @@ public class Compiler {
         Symbol s = current.resolve(text);
         Code code = Code.None;
         if(s == null){
-            gen.blockToStrings.get(current).add(text);
+           // gen.blockToStrings.get(current).add(text);
             code = Code.of(Bytecode.PUSH_GLOBAL).join(Utils.toLiteral(gen.getLiteralIndex(text)));
         }
         else if(s instanceof  FieldSymbol){
@@ -126,7 +126,7 @@ public class Compiler {
             code = Code.of(Bytecode.PUSH_LOCAL).join(Utils.toLiteral(delta).join(Utils.toLiteral(index)));
         }
         else if(s instanceof STClass){
-            gen.blockToStrings.get(current).add(s.getName());
+           // gen.blockToStrings.get(current).add(s.getName());
             code = Code.of(Bytecode.PUSH_GLOBAL).join(Utils.toLiteral(gen.getLiteralIndex(text)));
         }
         return code;
@@ -155,7 +155,7 @@ public class Compiler {
             s = text.substring(1,text.length()-1);
         else
             s = text;
-        gen.blockToStrings.get(current).add(s);
+       // gen.blockToStrings.get(current).add(s);
         Code code = Code.of(Bytecode.PUSH_LITERAL).join(Utils.toLiteral(gen.getLiteralIndex(s)));
         return code;
     }
@@ -190,9 +190,16 @@ public class Compiler {
 	}
 
 
-    public String getFileName() {return fileName;}
-
-    public static Code dbg(int literalIndex, int line, int charPos) {
-        return Code.of(Bytecode.DBG).join(Utils.shortToBytes(literalIndex)).join(Utils.intToBytes(Bytecode.combineLineCharPos(line, charPos)));
+    public String getFileName() {
+        String[] strings = fileName.split("/");
+        return strings[strings.length-1];
     }
+
+//    public static Code dbg(int literalIndex, int line, int charPos) {
+//        return Code.of(Bytecode.DBG).join(Utils.shortToBytes(literalIndex)).join(Utils.intToBytes(Bytecode.combineLineCharPos(line, charPos)));
+//    }
+    public static Code dbg(int index, int line, int charPos) 	{
+        //return Code.None;
+        return Code.of(Bytecode.DBG).join(Utils.toLiteral(index)).join(Utils.intToBytes(Bytecode.combineLineCharPos(line, charPos)));
+     }
 }

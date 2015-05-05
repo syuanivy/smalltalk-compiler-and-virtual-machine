@@ -184,12 +184,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     }
 
     private Code send(int numOfArgs, String keyword) {
-        blockToStrings.get(currentScope).add(keyword);
+      //  blockToStrings.get(currentScope).add(keyword);
         int index = getLiteralIndex(keyword);
         return Code.of(Bytecode.SEND).join(Utils.shortToBytes(numOfArgs)).join(Utils.shortToBytes(index));
     }
     private Code sendSuper( String keyword) {
-        blockToStrings.get(currentScope).add(keyword);
+        //blockToStrings.get(currentScope).add(keyword);
         int index = getLiteralIndex(keyword);
         return Code.of(Bytecode.SEND_SUPER).join(Utils.shortToBytes(0)).join(Utils.shortToBytes(index));
     }
@@ -222,15 +222,19 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		Code code = new Code();
         if(ctx.body() instanceof SmalltalkParser.EmptyBodyContext)
              code = visitEmptyBody((SmalltalkParser.EmptyBodyContext)ctx.body());
-		// always add ^self in case no return statement
-		if ( compiler.genDbg ) { // put dbg in front of push_self
-			code = Code.join(code, dbgAtEndBlock(ctx.stop));
-		}
-		if ( ctx.body() instanceof SmalltalkParser.FullBodyContext ) {
+        else
+            code = visit(ctx.body());
+        if ( compiler.genDbg ) { // put dbg in front of push_self
+            code = Code.join(code, dbgAtEndBlock(ctx.stop));
+        }
+
+        if ( ctx.body() instanceof SmalltalkParser.FullBodyContext ) {
 			// pop final value unless block is empty
-			code = visit(ctx.body()).join(Compiler.pop()); // visitFullBody() doesn't have last pop; we toss here but use with block_return in visitBlock
+			code = code.join(Compiler.pop()); // visitFullBody() doesn't have last pop; we toss here but use with block_return in visitBlock
 		}
-		code = code.join(Compiler.push_self());
+
+        // always add ^self in case no return statement
+        code = code.join(Compiler.push_self());
 		code = code.join(Compiler.method_return());
 		methodNode.scope.compiledBlock = getCompiledBlock(methodNode.scope, code, methodNode.scope.isClassMethod);
 //		System.out.println(Bytecode.disassemble(methodNode.scope.compiledMethod, 0));
@@ -350,13 +354,13 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     }
 
 	public int getLiteralIndex(String text) {
-        StringTable strings = blockToStrings.get(currentScope);
-        List<String> list = strings.toList();
-        for(String s: list){
-            if(s.equals(text))
-                return list.indexOf(s);
-        }
-        return -1;
+/*        StringTable strings = blockToStrings.get(currentScope);
+        String[] list = strings.toArray();
+        for(int i = 0; i< list.length; i++){
+            if(list[i].equals(text))
+                return i;
+        }*/
+        return blockToStrings.get(currentScope).add(text);
     }
 
 	public Code dbgAtEndMain(Token t) {
@@ -375,6 +379,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	}
 
 	public Code dbg(int line, int charPos) {
-		return Compiler.dbg(getLiteralIndex(compiler.getFileName()), line, charPos);
+
+        return Compiler.dbg(getLiteralIndex(compiler.getFileName()), line, charPos);
 	}
 }
