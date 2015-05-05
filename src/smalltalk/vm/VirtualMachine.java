@@ -6,17 +6,7 @@ import org.antlr.symtab.Utils;
 import smalltalk.compiler.semantics.STClass;
 import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.exceptions.*;
-import smalltalk.vm.primitive.BlockContext;
-import smalltalk.vm.primitive.BlockDescriptor;
-import smalltalk.vm.primitive.Primitive;
-import smalltalk.vm.primitive.STBoolean;
-import smalltalk.vm.primitive.STCompiledBlock;
-import smalltalk.vm.primitive.STFloat;
-import smalltalk.vm.primitive.STInteger;
-import smalltalk.vm.primitive.STMetaClassObject;
-import smalltalk.vm.primitive.STNil;
-import smalltalk.vm.primitive.STObject;
-import smalltalk.vm.primitive.STString;
+import smalltalk.vm.primitive.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,16 +37,18 @@ public class VirtualMachine {
         systemDict = new SystemDictionary(this);
         systemDict.symtabToSystemDictionary(symtab);
         systemDict.initPredefinedObjects();
-        // create system dictionary and predefined Transcript
-        // convert symbol table ClassSymbols to STMetaClassObjects
     }
 
     /** look up MainClass>>main and execute it */
     public STObject execMain() {
-        // ...
-
-       // return exec(mainObject,main);
-        return null;
+        STMetaClassObject mainClass = systemDict.lookupClass("MainClass");
+        if(mainClass == null)
+            return nil();
+        STCompiledBlock main = mainClass.resolveMethod("main");
+        if(main == null)
+            return nil();
+        STObject stObject = new STObject(mainClass);
+        return exec(stObject,main);
     }
 
     /** Begin execution of the bytecodes in method relative to a receiver
@@ -67,17 +59,43 @@ public class VirtualMachine {
      *  or return self/receiver if there's nothing on the stack.
      */
     public STObject exec(STObject self, STCompiledBlock method) {
-        ctx = null;
-        BlockContext initialContext = new BlockContext(this, method, self);
-        pushContext(initialContext);
+        BlockContext mainCtx = new BlockContext(this, method, self);
+        mainCtx.enclosingMethodContext = mainCtx;
+        pushContext(mainCtx);
+
         // fetch-decode-execute loop
-        while ( true ) {
+        while ( ctx.ip < ctx.compiledBlock.bytecode.length ) {
             if ( trace ) traceInstr(); // show instr first then stack after to show results
-            int op = 0; // ...
+            int op = ctx.compiledBlock.bytecode[ctx.ip++];
             switch ( op ) {
                 case Bytecode.NIL:
                     ctx.push(nil());
                     break;
+                case Bytecode.TRUE:
+                    STBoolean t = new STBoolean(this, true);
+                    ctx.push(t);
+                    break;
+                case Bytecode.FALSE:
+                    STBoolean f = new STBoolean(this, false);
+                    ctx.push(f);
+                    break;
+                case Bytecode.PUSH_CHAR:
+                    int character = consumeChar(ctx.ip);
+                    STCharacter c = new STCharacter(this, character);
+                    ctx.push(c);
+                    break;
+                case Bytecode.PUSH_INT:
+                    int integer = consumeInt(ctx.ip);
+                    STInteger i = new STInteger(this, integer);
+                    ctx.push(i);
+                    break;
+                case Bytecode.PUSH_FLOAT:
+                    float floating = consumeFloat(ctx.ip);
+                    STFloat flo= new STFloat(this,floating);
+                    ctx.push(flo);
+                    break;
+                //case Bytecode.PUSH_FIELD:
+
                 case Bytecode.SEND:
                     // done on the fly, not to be trusted :)
                     int nArgs = consumeShort(ctx.ip);
@@ -96,10 +114,21 @@ public class VirtualMachine {
                         // push context
                     }
                     break;
+                case Bytecode.RETURN:
+                    STObject returnValue = ctx.pop();
+                    BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
+                    if(returnToCtx == null)
+                        return returnValue;
+                    returnToCtx.push(returnValue);
+                    break;
+                case Bytecode.DBG:
+                    ctx.ip += 2; //first arg, short
+                    ctx.ip +=4;  //second arg, int
+                    break;
             }
             if ( trace ) traceStack(); // show stack *after* execution
         }
-      //  return ctx!=null ? ctx.receiver : null;
+        return ctx!=null ? ctx.receiver : null;
     }
 
     public void error(String type, String msg) throws VMException {
@@ -201,11 +230,40 @@ public class VirtualMachine {
         return x;
     }
 
-    // get short operand out of bytecode sequence
-    public int getShort(int index) {
+    public int consumeInt(int index){
+        int x = getInt(index);
+        ctx.ip += Bytecode.OperandType.INT.sizeInBytes;
+        return x;
+    }
+
+
+    public int consumeChar(int index){
+        int x = getShort(index); //same size as short
+        ctx.ip += Bytecode.OperandType.CHAR.sizeInBytes;
+        return x;
+    }
+
+    public float consumeFloat(int index){
+        int x = getInt(index);
+        float y = Float.intBitsToFloat(x);
+        ctx.ip += Bytecode.OperandType.FLOAT.sizeInBytes;
+        return y;
+    }
+
+
+    // get short operand( or anything of size 2) out of bytecode sequence
+    private int getShort(int index) {
         byte[] code = ctx.compiledBlock.bytecode;
         return Bytecode.getShort(code, index);
     }
+
+    // get short operand (or anything of size 4)out of bytecode sequence
+    private int getInt(int index) {
+        byte[] code = ctx.compiledBlock.bytecode;
+        return Bytecode.getInt(code, index);
+    }
+
+
     // D e b u g g i n g
 
     void trace() {

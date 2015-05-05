@@ -30,7 +30,7 @@ import smalltalk.vm.VirtualMachine;
  *  for simplicity reasons.
  */
 public class BlockContext {
-	public static final int INITIAL_STACK_SIZE = 10;
+	public static final int INITIAL_STACK_SIZE = 100;
 
 	/** An indicator object that indicates a method has already returned
 	 *  so that we can return again later from inside a closure that is
@@ -39,7 +39,7 @@ public class BlockContext {
 	public static final BlockContext RETURNED = new BlockContext();
 
 	/** In what VM am I executing? */
-	public final VirtualMachine vm = null;
+	public final VirtualMachine vm;
 
 	// ----- STATE OF EXECUTION -----
 
@@ -50,13 +50,13 @@ public class BlockContext {
 	public BlockContext invokingContext;
 
 	/** The receiver of the message that resulted in this context */
-	public final STObject receiver = null;
+	public final STObject receiver;
 
 	/** The compiled code associated with this context */
-	public final STCompiledBlock compiledBlock= null;
+	public final STCompiledBlock compiledBlock;
 
 	/** All arguments and local variables associated with this block */
-	public final STObject[] locals = null;
+	public final STObject[] locals;
 
 	/** The instruction pointer that points into compiledBlock.bytcodes */
 	public int ip = 0;
@@ -148,15 +148,20 @@ public class BlockContext {
 	public int prev_ip = -1; // what was the last instruction? ip points at next to execute not currently executing
 
 	private BlockContext() { // used to just to create RETURNED
-/*		vm = null;
-		receiver = null;
-		compiledBlock = null;
-		locals = null;*/
-	}
+        this.vm = null;
+        this.compiledBlock = null;
+        this.receiver = null;
+        this.locals = null;
+    }
 
 	/** Create a context from a STCompiledBlock and a receiver object */
-	public BlockContext(VirtualMachine vm, STCompiledBlock compiledBlock, STObject receiver) {
-	}
+    public BlockContext(VirtualMachine vm, STCompiledBlock compiledBlock, STObject receiver) {
+        this.vm = vm;
+        this.compiledBlock = compiledBlock;
+        this.receiver = receiver;
+        this.locals = new STObject[compiledBlock.nargs+compiledBlock.nlocals];
+        this.stack = new STObject[INITIAL_STACK_SIZE];
+    }
 
 	/** Create a BlockContext from a {@link BlockDescriptor} as a
 	 *  result of a "value" message sent to force evaluation. The
@@ -181,15 +186,30 @@ public class BlockContext {
 	 *  the enclosing method).
 	 */
 	public BlockContext(VirtualMachine vm, BlockDescriptor descriptor) {
-	}
+        this.vm = vm;
+        this.compiledBlock = descriptor.block;
+        this.receiver = descriptor.receiver;
+        this.locals = new STObject[descriptor.block.nargs+descriptor.block.nlocals];
+        this.stack = new STObject[INITIAL_STACK_SIZE];
+    }
 
 	public void push(STObject o) {
+        stack[++sp] = o;
 	}
-	public STObject pop() { return null; }
-	public STObject top() { return null; }
+	public STObject pop() {
+        return stack[sp--];
+    }
+	public STObject top() {
+        return stack[sp];
+    }
 
 	/** If there is no enclosing context, we must be a method. */
-	public boolean isBlock() { return false; }
+	public boolean isBlock() {
+        if(this.enclosingContext == null)
+            return false;
+        else
+            return true;
+    }
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();

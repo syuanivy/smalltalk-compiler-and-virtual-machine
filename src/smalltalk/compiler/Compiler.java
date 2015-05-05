@@ -139,8 +139,18 @@ public class Compiler {
             code = push_predefined(p.getText());
         }
         else if(ctx instanceof SmalltalkParser.NumberLiteralContext){
-            int num = Integer.parseInt(((SmalltalkParser.NumberLiteralContext) ctx).NUMBER().getText());
-            code = Code.of(Bytecode.PUSH_INT).join(Utils.intToBytes(num));
+            String digits = ((SmalltalkParser.NumberLiteralContext) ctx).NUMBER().getText();
+            float f;
+            int i;
+            if(digits.contains(".")){
+                f = Float.parseFloat(digits);
+                code = Code.of(Bytecode.PUSH_FLOAT).join(Utils.floatToBytes(f));
+            }
+            else{
+                i = Integer.parseInt(digits);
+                code = Code.of(Bytecode.PUSH_INT).join(Utils.intToBytes(i));
+            }
+
         }
         else if(ctx instanceof SmalltalkParser.StringLiteralContext){
             String text = ((SmalltalkParser.StringLiteralContext) ctx).STRING().getText();

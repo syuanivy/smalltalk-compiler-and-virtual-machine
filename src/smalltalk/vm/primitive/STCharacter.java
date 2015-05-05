@@ -5,7 +5,7 @@ import smalltalk.vm.VirtualMachine;
 public class STCharacter extends STObject {
 	public final int c;
 
-	STCharacter(VirtualMachine vm, int c) {
+	public STCharacter(VirtualMachine vm, int c) {
 		super(vm.lookupClass("Character"));
 		this.c = c;
 	}
