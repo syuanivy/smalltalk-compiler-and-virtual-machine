@@ -71,6 +71,9 @@ public class VirtualMachine {
                 case Bytecode.NIL:
                     ctx.push(nil());
                     break;
+                case Bytecode.SELF:
+                    ctx.push(ctx.receiver);
+                    break;
                 case Bytecode.TRUE:
                     STBoolean t = new STBoolean(this, true);
                     ctx.push(t);
@@ -105,12 +108,12 @@ public class VirtualMachine {
                     STCompiledBlock blk = recv.getSTClass().resolveMethod(msgName);
                     // if null, throw MessageNotUnderstood
                     if ( blk.isPrimitive() ) {
+                        Primitive p = blk.primitive;
                         STObject result = blk.primitive.perform(ctx, nArgs);
                         if ( result!=null ) {
                             ctx.push(result);
                         }
-                    }
-                    else { // it's a method call
+                    } else { // it's a method call
                         // push context
                     }
                     break;

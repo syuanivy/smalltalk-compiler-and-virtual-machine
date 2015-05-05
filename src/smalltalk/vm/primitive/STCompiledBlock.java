@@ -2,8 +2,10 @@ package smalltalk.vm.primitive;
 
 import org.antlr.symtab.*;
 import org.stringtemplate.v4.ST;
+import smalltalk.compiler.parser.SmalltalkParser;
 import smalltalk.compiler.semantics.STBlock;
 import smalltalk.compiler.semantics.STClass;
+import smalltalk.compiler.semantics.STMethod;
 import smalltalk.compiler.semantics.STPrimitiveMethod;
 import smalltalk.vm.Bytecode;
 
@@ -89,7 +91,7 @@ public class STCompiledBlock {
 	/** A pointer to the primitive implementing the method, if this field
 	 *  is non-null.
  	 */
-	public final Primitive primitive = null;
+	public final Primitive primitive;
 
 	public STCompiledBlock(STBlock blk, Boolean isClassMethod) {
         if(isClassMethod)
@@ -98,6 +100,7 @@ public class STCompiledBlock {
             name = blk.getName();
         qualifiedName = blk.getQualifiedName(">>");
         STClass classSymbol = blk.getEnclosingClass(STClass.class);
+       // enclosingClass = new STMetaClassObject(classSymbol);?? how to initialize this?
         int Nargs = 0;
         int Nlocals = 0;
 
@@ -127,6 +130,11 @@ public class STCompiledBlock {
                     blocks[i++] = ((STBlock) o).compiledBlock;
             }
         }
+
+        if(blk instanceof STPrimitiveMethod)
+            primitive = ((STPrimitiveMethod)blk).primitive;
+        else
+            primitive = null;
 
 	}
 

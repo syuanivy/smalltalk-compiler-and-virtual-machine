@@ -16,6 +16,7 @@ import smalltalk.misc.Utils;
 
 import smalltalk.vm.Bytecode;
 import smalltalk.vm.primitive.STCompiledBlock;
+import smalltalk.vm.primitive.STMetaClassObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, code, false);
         popScope();
         popScope();
+        		System.out.println(Bytecode.disassemble(ctx.scope.compiledBlock, 0));
+
         return Code.None;
     }
 
@@ -318,7 +321,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     private Code sendBop(SmalltalkParser.BopContext ctx) {
         String keyword;
-        if(ctx.opchar().size() == 1)            //single char
+        if(ctx.opchar().size() == 0) // "-" only
+            keyword = "-";
+        else if(ctx.opchar().size() == 1)            //single char
             keyword = ctx.opchar(0).getText();
         else                                    //double chars
             keyword = ctx.opchar(0).getText() + ctx.opchar(1).getText();

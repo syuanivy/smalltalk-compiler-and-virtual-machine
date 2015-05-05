@@ -235,6 +235,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         STMethod m = new STMethod("main", ctx);
         ctx.scope = m;
         currentScope.define(m);
+        m.setDefNode(ctx);
         m.setEnclosingScope(currentScope);
         currentMethod = m;
         pushScope(m);

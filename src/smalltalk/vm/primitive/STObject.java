@@ -34,7 +34,7 @@ public class STObject {
 
 	/** What kind of object am I? Analogous to Java's Object.getClass() */
 	public STMetaClassObject getSTClass() {
-		return null;
+		return metaclass;
 	}
 
 	/** Analogous to Java's toString() */
