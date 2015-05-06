@@ -147,14 +147,14 @@ public class VirtualMachine {
                     } else { // it's a method call
                         // push context
                         BlockContext call = new BlockContext(this,blk, recv);
-                        call.enclosingMethodContext = ctx.enclosingMethodContext;
+                        call.enclosingMethodContext = call;
 
                         pushContext(call);
                     }
                     break;
                 case Bytecode.BLOCK:
                     index = consumeShort(ctx.ip);
-                    blk = ctx.compiledBlock.blocks[index];
+                    blk = ctx.enclosingMethodContext.compiledBlock.blocks[index];
                     BlockDescriptor bd = new BlockDescriptor(blk, ctx);
                     ctx.push(bd);
                     break;
@@ -169,6 +169,7 @@ public class VirtualMachine {
                     if(returnToCtx == null)
                         return returnValue;
                     returnToCtx.push(returnValue);
+                    ctx = returnToCtx;
                     break;
                 case Bytecode.DBG:
                     ctx.ip += 2; //first arg, short

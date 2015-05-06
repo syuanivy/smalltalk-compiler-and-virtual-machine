@@ -16,7 +16,7 @@ public class STBoolean extends STObject {
         int firstArg = ctx.sp - nArgs + 1;
         STBoolean receiverObj = (STBoolean) ctx.stack[firstArg - 1];
         STObject result = vm.nil();
-        STObject arg1;
+        STObject arg1, arg2;
         switch ( primitive ) {
             case Boolean_NOT :
                 Boolean not = Boolean.logicalXor(true,receiverObj.b);
@@ -33,6 +33,20 @@ public class STBoolean extends STObject {
                     result = null;
                 }
                 break;
+            case Boolean_IFTRUE_IFFALSE:
+                arg2 = ctx.pop(); //else blk
+                arg1 = ctx.pop(); //if blk
+                ctx.pop(); //pop receiver
+                if(receiverObj.b){
+                    ctx.push(arg1);
+                    BlockDescriptor.perform(ctx, 0, Primitive.valueOf("BlockDescriptor_VALUE"));
+                }else{
+                    ctx.push(arg2);
+                    BlockDescriptor.perform(ctx,0,Primitive.valueOf("BlockDescriptor_VALUE"));
+                }
+                result = null;
+                break;
+
         }
         return result;
     }

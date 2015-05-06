@@ -180,7 +180,7 @@ public class TestCore extends BaseTest {
 		0017:  dbg '<string>', 1:0              MainClass>>main[][5]
 		0024:  return
 		 */
-		/*execAndCheck("^1+2", "3");
+		execAndCheck("^1+2", "3");
 		execAndCheck("^1 - 2", "-1");
 		execAndCheck("^2*4", "8");
 		execAndCheck("^4/2", "2");
@@ -191,7 +191,7 @@ public class TestCore extends BaseTest {
 		execAndCheck("^1>2", "false");
 		execAndCheck("^1<=2", "true");
 		execAndCheck("^1>=2", "false");
-		execAndCheck("^5 mod: 4", "1");*/
+		execAndCheck("^5 mod: 4", "1");
 		execAndCheck("^5 hash", "5");
 	}
 
@@ -712,7 +712,7 @@ public class TestCore extends BaseTest {
 		0021:  return
 		 */
 		execAndCheck("^true and: true", "true");
-		execAndCheck("^true and: false", "false");
+    	execAndCheck("^true and: false", "false");
 		execAndCheck("^false and: true", "false");
 		execAndCheck("^false and: false", "false");
 	}
