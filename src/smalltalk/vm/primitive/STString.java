@@ -24,10 +24,16 @@ public class STString extends STObject {
 		switch ( primitive ) {
             case String_CAT:
                 s1 = receiverObj.toString();
-                ctx.sp--; //pop for arg1
                 s2 = ctx.stack[firstArg].toString();
+                ctx.sp--; //pop for arg1
                 ctx.sp--; //pop for receiver
                 result = new STString(vm, s1+s2);
+                break;
+            case String_EQ:
+                STObject arg = ctx.stack[firstArg];
+                ctx.sp--;
+                ctx.sp--;
+                result = vm.newBoolean(receiverObj.toString() == arg.toString());
                 break;
 
 		}

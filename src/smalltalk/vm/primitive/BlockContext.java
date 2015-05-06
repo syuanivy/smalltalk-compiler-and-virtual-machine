@@ -160,6 +160,12 @@ public class BlockContext {
         this.compiledBlock = compiledBlock;
         this.receiver = receiver;
         this.locals = new STObject[compiledBlock.nargs+compiledBlock.nlocals];
+        for (int i = 0; i < locals.length; i++) {
+            locals[i]=vm.nil();
+        }
+        for (int j = compiledBlock.nargs-1; j >= 0; j--){
+            locals[j] = vm.ctx.pop();
+        }
         this.stack = new STObject[INITIAL_STACK_SIZE];
     }
 

@@ -61,6 +61,7 @@ public class VirtualMachine {
     public STObject exec(STObject self, STCompiledBlock method) {
         BlockContext mainCtx = new BlockContext(this, method, self);
         mainCtx.enclosingMethodContext = mainCtx;
+        mainCtx.enclosingContext = null;//??
         pushContext(mainCtx);
 
         int index, delta;
@@ -86,7 +87,6 @@ public class VirtualMachine {
                     break;
                 case Bytecode.PUSH_CHAR:
                     int character = consumeChar(ctx.ip);
-                    System.out.println("consume: " +character);
                     STCharacter c = new STCharacter(this, character);
                     ctx.push(c);
                     break;
@@ -103,13 +103,13 @@ public class VirtualMachine {
                 //case Bytecode.PUSH_FIELD:
 
                 case Bytecode.PUSH_LOCAL:
-                    delta = getShort(ctx.ip);
-                    index = getShort(ctx.ip);
+                    delta = consumeShort(ctx.ip);
+                    index = consumeShort(ctx.ip);
                     dest = getDestinationBlock(delta);
                     ctx.push(dest.locals[index]);
                     break;
                 case Bytecode.PUSH_LITERAL:
-                    index = getShort(ctx.ip); //get index of the literal
+                    index = consumeShort(ctx.ip); //get index of the literal
                     String s = ctx.compiledBlock.literals[index];
                     STString literal = new STString(this, s);
                     ctx.push(literal);
@@ -121,8 +121,8 @@ public class VirtualMachine {
                     ctx.push(array);
                     break;
                 case Bytecode.STORE_LOCAL:
-                    delta = getShort(ctx.ip);
-                    index = getShort(ctx.ip);
+                    delta = consumeShort(ctx.ip);
+                    index = consumeShort(ctx.ip);
                     dest = getDestinationBlock(delta);
                     dest.locals[index] = ctx.top();
                     break;
@@ -132,7 +132,8 @@ public class VirtualMachine {
                 case Bytecode.SEND:
                     // done on the fly, not to be trusted :)
                     int nArgs = consumeShort(ctx.ip);
-                    STObject recv = ctx.stack[ctx.sp - nArgs];
+                    int firstArg = ctx.sp - nArgs + 1;
+                    STObject recv = ctx.stack[firstArg-1];
                     int litindex = consumeShort(ctx.ip);
                     String msgName = ctx.compiledBlock.literals[litindex];
                     STCompiledBlock blk = recv.getSTClass().resolveMethod(msgName);
@@ -145,7 +146,17 @@ public class VirtualMachine {
                         }
                     } else { // it's a method call
                         // push context
+                        BlockContext call = new BlockContext(this,blk, recv);
+                        call.enclosingMethodContext = ctx.enclosingMethodContext;
+
+                        pushContext(call);
                     }
+                    break;
+                case Bytecode.BLOCK:
+                    index = consumeShort(ctx.ip);
+                    blk = ctx.compiledBlock.blocks[index];
+                    BlockDescriptor bd = new BlockDescriptor(blk, ctx);
+                    ctx.push(bd);
                     break;
                 case Bytecode.RETURN:
                     STObject returnValue = ctx.top();
@@ -266,7 +277,7 @@ public class VirtualMachine {
     }
 
     public STBoolean newBoolean(boolean b) {
-        return null;
+        return new STBoolean(this, b);
     }
 
     public STNil nil() {
@@ -288,7 +299,7 @@ public class VirtualMachine {
 
     public int consumeChar(int index){
         int x = getShort(index); //same size as short
-        System.out.println("within consume: " + x);
+   //     System.out.println("within consume: " + x);
         ctx.ip += Bytecode.OperandType.CHAR.sizeInBytes;
         return x;
     }

@@ -12,7 +12,7 @@ public class STInteger extends STObject {
 	}
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
-        STObject result = null;
+        STObject result = ctx.vm.nil();
         STObject x, y;
         int i_x, i_y, i_z;
         boolean b;

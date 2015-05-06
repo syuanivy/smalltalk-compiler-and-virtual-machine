@@ -56,7 +56,7 @@ public class BlockDescriptor extends STObject {
 	public final STObject receiver;
 
 	// visible only to the package so no one else can randomly create these objects
-	BlockDescriptor(STCompiledBlock blk, BlockContext activeContext) {
+	public BlockDescriptor(STCompiledBlock blk, BlockContext activeContext) {
 		super(activeContext.vm.lookupClass("BlockDescriptor"));
         this.block = blk;
         enclosingContext = activeContext;
@@ -65,7 +65,32 @@ public class BlockDescriptor extends STObject {
     }
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
-		return null; // no result for block initiation; block just starts executing
+        VirtualMachine vm = ctx.vm;
+        STObject receiver = ctx.pop();
+        STObject arg1, arg2;
+        BlockContext bc;
+        STObject result = null;
+        switch ( primitive ) {
+            case BlockDescriptor_VALUE:
+                bc = new BlockContext(vm, (BlockDescriptor)receiver);
+                vm.pushContext(bc);
+                break;
+            case BlockDescriptor_VALUE_1_ARG:
+                bc = new BlockContext(vm, (BlockDescriptor)receiver);
+                arg1 = ctx.pop();
+                bc.locals[0] = arg1;
+                vm.pushContext(bc);
+                break;
+            case BlockDescriptor_VALUE_2_ARGS:
+                bc = new BlockContext(vm, (BlockDescriptor)receiver);
+                arg2 = ctx.pop();
+                arg1 = ctx.pop();
+                bc.locals[0] = arg1;
+                bc.locals[1] = arg2;
+                vm.pushContext(bc);
+                break;
+        }
+        return result;// no result for block initiation; block just starts executing
 	}
 
 	@Override
