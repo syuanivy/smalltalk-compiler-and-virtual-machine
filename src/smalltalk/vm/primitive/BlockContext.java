@@ -190,7 +190,12 @@ public class BlockContext {
         this.compiledBlock = descriptor.block;
         this.receiver = descriptor.receiver;
         this.locals = new STObject[descriptor.block.nargs+descriptor.block.nlocals];
+        for (int i = 0; i < locals.length; i++) {
+            locals[i]=vm.nil();
+        }
         this.stack = new STObject[INITIAL_STACK_SIZE];
+        this.enclosingContext = descriptor.enclosingContext;
+        this.enclosingMethodContext = descriptor.enclosingMethodContext;
     }
 
 	public void push(STObject o) {

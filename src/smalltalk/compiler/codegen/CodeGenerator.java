@@ -330,6 +330,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return send(1, keyword);                //numOfArg == 1
     }
 
+    @Override
+    public Code visitArray(@NotNull SmalltalkParser.ArrayContext ctx) {
+        Code elements = visitChildren(ctx);
+        Code array = Code.of(Bytecode.PUSH_ARRAY).join(Utils.toLiteral(ctx.messageExpression().size()));
+        return elements.join(array);
+    }
 
     @Override
 	public Code visitReturn(@NotNull SmalltalkParser.ReturnContext ctx) {

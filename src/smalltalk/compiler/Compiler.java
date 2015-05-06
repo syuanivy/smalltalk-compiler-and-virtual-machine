@@ -157,6 +157,15 @@ public class Compiler {
 
             code = push_string(text, current, gen);
         }
+
+        else if(ctx instanceof SmalltalkParser.CharLiteralContext){
+            String c = ((SmalltalkParser.CharLiteralContext)ctx).CHAR().getText();
+            int character = (int) c.charAt(1);
+            System.out.println(c);
+            System.out.println(c.substring(1));
+            code = Code.of(Bytecode.PUSH_CHAR).join(Utils.toLiteral(character));
+        }
+
         return code;
     }
     public static Code push_string(String text, Scope current, CodeGenerator gen){

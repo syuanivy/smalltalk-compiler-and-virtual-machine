@@ -8,10 +8,13 @@ import java.util.List;
 
 /** */
 public class STArray extends STObject {
-	public final STObject[] elements = null;
+	public final STObject[] elements;
 
-	STArray(VirtualMachine vm, int n, STObject fill) {
+	public STArray(VirtualMachine vm, int n, STObject fill) {
 		super(vm.lookupClass("Array"));
+        elements = new STObject[n];
+        for (STObject o: elements)
+            o = fill;
 	}
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
@@ -20,6 +23,13 @@ public class STArray extends STObject {
 
 	@Override
 	public String toString() {
-		return "";
+		StringBuffer buffer = new StringBuffer("");
+        for(STObject o : elements){
+            buffer.append(o.toString());
+            buffer.append(". ");
+        }
+        String s = buffer.toString(); // with ". " at the end
+
+        return "{"+ s.substring(0,s.length()-2)+"}";
 	}
 }

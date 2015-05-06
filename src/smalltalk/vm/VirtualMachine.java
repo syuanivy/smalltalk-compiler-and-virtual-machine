@@ -63,6 +63,8 @@ public class VirtualMachine {
         mainCtx.enclosingMethodContext = mainCtx;
         pushContext(mainCtx);
 
+        int index, delta;
+        BlockContext dest;
         // fetch-decode-execute loop
         while ( ctx.ip < ctx.compiledBlock.bytecode.length ) {
             if ( trace ) traceInstr(); // show instr first then stack after to show results
@@ -84,6 +86,7 @@ public class VirtualMachine {
                     break;
                 case Bytecode.PUSH_CHAR:
                     int character = consumeChar(ctx.ip);
+                    System.out.println("consume: " +character);
                     STCharacter c = new STCharacter(this, character);
                     ctx.push(c);
                     break;
@@ -99,6 +102,33 @@ public class VirtualMachine {
                     break;
                 //case Bytecode.PUSH_FIELD:
 
+                case Bytecode.PUSH_LOCAL:
+                    delta = getShort(ctx.ip);
+                    index = getShort(ctx.ip);
+                    dest = getDestinationBlock(delta);
+                    ctx.push(dest.locals[index]);
+                    break;
+                case Bytecode.PUSH_LITERAL:
+                    index = getShort(ctx.ip); //get index of the literal
+                    String s = ctx.compiledBlock.literals[index];
+                    STString literal = new STString(this, s);
+                    ctx.push(literal);
+                    break;
+                case Bytecode.PUSH_ARRAY:
+                    STObject[] elements = consumeArray(ctx.ip);
+                    STArray array = new STArray(this, elements.length, nil());
+                    fillArray(array, elements);
+                    ctx.push(array);
+                    break;
+                case Bytecode.STORE_LOCAL:
+                    delta = getShort(ctx.ip);
+                    index = getShort(ctx.ip);
+                    dest = getDestinationBlock(delta);
+                    dest.locals[index] = ctx.top();
+                    break;
+                case Bytecode.POP:
+                    ctx.pop();
+                    break;
                 case Bytecode.SEND:
                     // done on the fly, not to be trusted :)
                     int nArgs = consumeShort(ctx.ip);
@@ -118,7 +148,7 @@ public class VirtualMachine {
                     }
                     break;
                 case Bytecode.RETURN:
-                    STObject returnValue = ctx.pop();
+                    STObject returnValue = ctx.top();
                     BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
                     if(returnToCtx == null)
                         return returnValue;
@@ -133,6 +163,22 @@ public class VirtualMachine {
         }
         return ctx!=null ? ctx.receiver : null;
     }
+
+    private BlockContext getDestinationBlock(int delta) {
+        BlockContext dest;
+        dest = ctx;
+        for(int d = 0 ; d < delta; d++){
+            dest = dest.enclosingContext;
+
+        }
+        return dest;
+    }
+
+    private void fillArray(STArray array, STObject[] elements) {
+        for(int i = 0; i < elements.length; i++)
+            array.elements[i] = elements[i];
+    }
+
 
     public void error(String type, String msg) throws VMException {
         error(type, null, msg);
@@ -216,7 +262,7 @@ public class VirtualMachine {
     }
 
     public STString newString(String s) {
-        return null;
+        return new STString(this, s);
     }
 
     public STBoolean newBoolean(boolean b) {
@@ -242,6 +288,7 @@ public class VirtualMachine {
 
     public int consumeChar(int index){
         int x = getShort(index); //same size as short
+        System.out.println("within consume: " + x);
         ctx.ip += Bytecode.OperandType.CHAR.sizeInBytes;
         return x;
     }
@@ -251,6 +298,15 @@ public class VirtualMachine {
         float y = Float.intBitsToFloat(x);
         ctx.ip += Bytecode.OperandType.FLOAT.sizeInBytes;
         return y;
+    }
+
+    public STObject[] consumeArray(int index) {
+        int n = getShort(index);
+        ctx.ip += Bytecode.OperandType.SHORT.sizeInBytes;
+        STObject[] elements = new STObject[n];
+        for(int i = n-1; i>=0; i--)
+            elements[i] = ctx.pop(); // popped out in reversed order
+        return elements;
     }
 
 

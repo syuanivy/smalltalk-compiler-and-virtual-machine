@@ -6,6 +6,7 @@ import org.stringtemplate.v4.ST;
 import smalltalk.compiler.semantics.STClass;
 import smalltalk.compiler.semantics.STMethod;
 import smalltalk.vm.VirtualMachine;
+import smalltalk.vm.exceptions.MessageNotUnderstood;
 
 import java.util.*;
 
@@ -67,7 +68,16 @@ public class STMetaClassObject extends STObject {
     public String getName() { return name; }
 
     public STCompiledBlock resolveMethod(String name) {
-        return methods.get(name);
+        //resolve in enclosing class
+        STCompiledBlock blk= methods.get(name);
+        //if not found in enclosing, go up super
+        if(blk == null){
+            if(superClass == null)
+                throw new MessageNotUnderstood(name, "");
+            else
+                return superClass.resolveMethod(name);
+        }
+        return blk;
     }
 
     public int getNumberOfFields() {

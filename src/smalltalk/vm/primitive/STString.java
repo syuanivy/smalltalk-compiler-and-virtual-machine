@@ -9,7 +9,7 @@ public class STString extends STObject {
 		this(vm, String.valueOf(c));
 	}
 
-	STString(VirtualMachine vm, String s) {
+	public STString(VirtualMachine vm, String s) {
 		super(vm.lookupClass("String"));
 		this.s = s;
 	}
@@ -20,7 +20,16 @@ public class STString extends STObject {
 		int firstArg = ctx.sp - nArgs + 1;
 		STObject receiverObj = ctx.stack[firstArg - 1];
 		STObject result = vm.nil();
+        String s1,s2;
 		switch ( primitive ) {
+            case String_CAT:
+                s1 = receiverObj.toString();
+                ctx.sp--; //pop for arg1
+                s2 = ctx.stack[firstArg].toString();
+                ctx.sp--; //pop for receiver
+                result = new STString(vm, s1+s2);
+                break;
+
 		}
 		return result;
 	}
