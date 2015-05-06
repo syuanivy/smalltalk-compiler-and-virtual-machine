@@ -158,8 +158,13 @@ public class VirtualMachine {
                     BlockDescriptor bd = new BlockDescriptor(blk, ctx);
                     ctx.push(bd);
                     break;
+                case Bytecode.BLOCK_RETURN:
+                    STObject v = ctx.pop();
+                    popContext();
+                    ctx.push(v);
+                    break;
                 case Bytecode.RETURN:
-                    STObject returnValue = ctx.top();
+                    STObject returnValue = ctx.pop();
                     BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
                     if(returnToCtx == null)
                         return returnValue;

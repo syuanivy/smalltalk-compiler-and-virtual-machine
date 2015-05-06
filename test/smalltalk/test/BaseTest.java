@@ -75,7 +75,7 @@ public class BaseTest {
 
     public void execAndCheck(String input, String expecting, boolean genDbg) {
         boolean withLinkedList = false;
-        boolean trace = false;
+        boolean trace = true;
         boolean withDict = false;
         execAndCheck(input, expecting, withLinkedList, withDict, trace, genDbg);
     }

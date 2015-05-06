@@ -66,25 +66,32 @@ public class BlockDescriptor extends STObject {
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
         VirtualMachine vm = ctx.vm;
-        STObject receiver = ctx.pop();
+        vm.assertNumOperands(nArgs+1); // ensure args + receiver
+        // index of 1st arg on opnd stack; use only if arg(s) present for primitive
+        int firstArg = ctx.sp - nArgs + 1;
+        BlockDescriptor receiver = (BlockDescriptor) ctx.stack[firstArg-1];
         STObject arg1, arg2;
         BlockContext bc;
         STObject result = null;
         switch ( primitive ) {
             case BlockDescriptor_VALUE:
-                bc = new BlockContext(vm, (BlockDescriptor)receiver);
+                bc = new BlockContext(vm, (receiver));
+                ctx.sp--;
                 vm.pushContext(bc);
                 break;
             case BlockDescriptor_VALUE_1_ARG:
-                bc = new BlockContext(vm, (BlockDescriptor)receiver);
-                arg1 = ctx.pop();
+                bc = new BlockContext(vm, (receiver));
+                ctx.sp--;
+                arg1 = ctx.stack[firstArg];
+                ctx.sp--;
                 bc.locals[0] = arg1;
                 vm.pushContext(bc);
                 break;
             case BlockDescriptor_VALUE_2_ARGS:
-                bc = new BlockContext(vm, (BlockDescriptor)receiver);
-                arg2 = ctx.pop();
-                arg1 = ctx.pop();
+                bc = new BlockContext(vm,receiver);
+                arg2 = ctx.stack[firstArg+1];
+                arg1 = ctx.stack[firstArg];
+                ctx.sp -= 3;
                 bc.locals[0] = arg1;
                 bc.locals[1] = arg2;
                 vm.pushContext(bc);

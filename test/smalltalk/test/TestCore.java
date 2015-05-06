@@ -556,11 +556,17 @@ public class TestCore extends BaseTest {
 		0001:  block          0                 MainClass>>main[][true, main-block0]
 		0004:  dbg '<string>', 1:7              MainClass>>main[][true, main-block0]
 		0011:  send           1, 'ifTrue:'      MainClass>>main[][], MainClass>>main-block0[][]
+
+
 		0000:  push_int       99                MainClass>>main[][], MainClass>>main-block0[][99]
 		0005:  dbg '<string>', 1:17             MainClass>>main[][], MainClass>>main-block0[][99]
 		0012:  block_return                     MainClass>>main[][99]
+
 		0016:  dbg '<string>', 1:0              MainClass>>main[][99]
 		0023:  return
+
+
+
 		0000:  false                            MainClass>>main[][false]
 		0001:  block          0                 MainClass>>main[][false, main-block0]
 		0004:  dbg '<string>', 1:8              MainClass>>main[][false, main-block0]
