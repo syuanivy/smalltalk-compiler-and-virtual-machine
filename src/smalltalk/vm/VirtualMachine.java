@@ -114,6 +114,10 @@ public class VirtualMachine {
                     STString literal = new STString(this, s);
                     ctx.push(literal);
                     break;
+                case Bytecode.PUSH_GLOBAL:
+                    index = consumeShort(ctx.ip);
+                    ctx.push(systemDict.lookup(ctx.compiledBlock.literals[index]));
+                    break;
                 case Bytecode.PUSH_ARRAY:
                     STObject[] elements = consumeArray(ctx.ip);
                     STArray array = new STArray(this, elements.length, nil());
@@ -280,6 +284,10 @@ public class VirtualMachine {
 
     public STString newString(String s) {
         return new STString(this, s);
+    }
+
+    public STCharacter newCharacter(char c){
+        return new STCharacter(this, (int)c);
     }
 
     public STBoolean newBoolean(boolean b) {

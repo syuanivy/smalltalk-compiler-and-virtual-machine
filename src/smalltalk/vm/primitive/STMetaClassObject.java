@@ -57,6 +57,8 @@ public class STMetaClassObject extends STObject {
         if ( firstArg-1 >= 0 ) receiver = ctx.stack[firstArg-1];
         switch ( primitive ) {
             case Object_Class_BASICNEW:
+                ctx.sp--;
+                result = receiver; //not used
                 break;
             case Object_Class_ERROR:
                 vm.error(ctx.stack[firstArg].asString().toString());

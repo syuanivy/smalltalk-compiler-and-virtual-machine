@@ -70,8 +70,15 @@ public class STObject {
                 STObject arg = ctx.stack[firstArg];
                 ctx.sp--;
                 ctx.sp--;
-                System.out.println("SAME "+receiver+", "+arg);
                 result = vm.newBoolean(receiver.toString() == arg.toString());
+                break;
+            case Object_Class_BASICNEW:
+                ctx.sp--;
+                result = receiver; //not used
+                break;
+            case Object_Class_ERROR:
+                break;
+            case Object_PRINT:
                 break;
             case Object_HASH:
                 break;

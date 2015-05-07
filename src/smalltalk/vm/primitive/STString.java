@@ -35,6 +35,23 @@ public class STString extends STObject {
                 ctx.sp--;
                 result = vm.newBoolean(receiverObj.toString() == arg.toString());
                 break;
+            case String_ASARRAY:
+                ctx.sp--;
+                STArray array = new STArray(vm,((STString)receiverObj).s.length(), vm.nil());
+                for(int i = 0; i < ((STString)receiverObj).s.length(); i++ ){
+                    array.elements[i] = vm.newCharacter(((STString) receiverObj).s.charAt(i));
+                }
+                result = array;
+                break;
+            case String_Class_NEW:
+                STObject content = ctx.stack[firstArg];
+                ctx.sp--;
+                ctx.sp--;
+                if(content instanceof  STString)
+                    result = content;
+                else
+                    result = new STString(vm, (char)((STCharacter)content).c);
+                break;
 
 		}
 		return result;
