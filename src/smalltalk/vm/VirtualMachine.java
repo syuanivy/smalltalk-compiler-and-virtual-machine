@@ -66,6 +66,7 @@ public class VirtualMachine {
 
         int index, delta;
         BlockContext dest;
+        STObject field;
         // fetch-decode-execute loop
         while ( ctx.ip < ctx.compiledBlock.bytecode.length ) {
             if ( trace ) traceInstr(); // show instr first then stack after to show results
@@ -100,8 +101,11 @@ public class VirtualMachine {
                     STFloat flo= new STFloat(this,floating);
                     ctx.push(flo);
                     break;
-                //case Bytecode.PUSH_FIELD:
-
+                case Bytecode.PUSH_FIELD:
+                    index = consumeShort(ctx.ip);
+                    field = ctx.receiver.fields[index];
+                    ctx.push(field);
+                    break;
                 case Bytecode.PUSH_LOCAL:
                     delta = consumeShort(ctx.ip);
                     index = consumeShort(ctx.ip);
@@ -123,6 +127,11 @@ public class VirtualMachine {
                     STArray array = new STArray(this, elements.length, nil());
                     fillArray(array, elements);
                     ctx.push(array);
+                    break;
+                case Bytecode.STORE_FIELD:
+                    field = ctx.top();
+                    index = consumeShort(ctx.ip);
+                    ctx.receiver.fields[index] = field;
                     break;
                 case Bytecode.STORE_LOCAL:
                     delta = consumeShort(ctx.ip);

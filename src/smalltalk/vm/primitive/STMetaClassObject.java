@@ -58,7 +58,7 @@ public class STMetaClassObject extends STObject {
         switch ( primitive ) {
             case Object_Class_BASICNEW:
                 ctx.sp--;
-                result = receiver; //not used
+                result = new STObject((STMetaClassObject)receiver);
                 break;
             case Object_Class_ERROR:
                 vm.error(ctx.stack[firstArg].asString().toString());

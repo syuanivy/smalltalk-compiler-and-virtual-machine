@@ -1,7 +1,10 @@
 package smalltalk.vm.primitive;
 
+import org.antlr.symtab.FieldSymbol;
 import smalltalk.vm.VirtualMachine;
 import smalltalk.vm.exceptions.InternalVMException;
+
+import java.util.List;
 
 /** A Smalltalk instance. All fields initialized to nil.
  *  We combine all fields from all inherited classes into this one.  There is
@@ -20,8 +23,16 @@ public class STObject {
 
 	public STObject(STMetaClassObject metaclass) {
 		this.metaclass = metaclass;
-		fields = null;
-		// Create empty slot for each field directly defined by metaclass
+        if(metaclass != null){
+            fields = new STObject[metaclass.getNumberOfFields()];
+            for(int i = 0; i < metaclass.getNumberOfFields(); i++){
+                fields[i] = metaclass.vm.nil();
+            }
+        }
+        else{
+            fields = null;
+        }
+            		// Create empty slot for each field directly defined by metaclass
 		// plus any fields inherited from super class.
 		// Note: native backing objects like STBoolean do not have smalltalk-visible fields
 		// so nfields == 0 and therefore vm can be null.
