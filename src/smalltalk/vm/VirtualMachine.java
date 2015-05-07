@@ -159,7 +159,9 @@ public class VirtualMachine {
                         }
                     } else { // it's a method call
                         // push context
+
                         BlockContext call = new BlockContext(this,blk, recv);
+                        ctx.pop();
                         call.enclosingMethodContext = call;
 
                         pushContext(call);

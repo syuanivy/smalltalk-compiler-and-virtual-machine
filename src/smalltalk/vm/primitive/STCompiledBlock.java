@@ -124,10 +124,12 @@ public class STCompiledBlock {
         blocks = new STCompiledBlock[blk.numNestedBlocks];
         if(blk.isMethod()){
             List<Scope> list = blk.getAllNestedScopes();
-            int i = 0;
-            for(Scope o : list){
-                if(o instanceof STBlock)
-                    blocks[i++] = ((STBlock) o).compiledBlock;
+            int index;
+            for(Scope b : list){
+                if( b instanceof  STBlock){
+                    index = ((STBlock) b).index;
+                    blocks[index] = ((STBlock)b).compiledBlock;
+                }
             }
         }
 

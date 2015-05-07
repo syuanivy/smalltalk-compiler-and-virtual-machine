@@ -167,6 +167,7 @@ public class BlockContext {
             locals[j] = vm.ctx.pop();
         }
         this.stack = new STObject[INITIAL_STACK_SIZE];
+        this.enclosingContext  = null;
     }
 
 	/** Create a BlockContext from a {@link BlockDescriptor} as a
