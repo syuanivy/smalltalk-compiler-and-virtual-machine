@@ -91,7 +91,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, code, false);
         popScope();
         popScope();
-        		System.out.println(Bytecode.disassemble(ctx.scope.compiledBlock, 0));
+        //System.out.println(Bytecode.disassemble(ctx.scope.compiledBlock, 0));
 
         return Code.None;
     }

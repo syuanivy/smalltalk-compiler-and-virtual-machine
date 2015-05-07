@@ -76,6 +76,9 @@ public class STObject {
                 ctx.sp--; //pop receiver
                 break;
             case Object_CLASSNAME :
+                ctx.sp--;
+                String classname = receiver.metaclass.getName();
+                result = vm.newString(classname);
                 break;
             case Object_SAME : // SmallTalk == op.  same as == in Java (same object)
                 STObject arg = ctx.stack[firstArg];

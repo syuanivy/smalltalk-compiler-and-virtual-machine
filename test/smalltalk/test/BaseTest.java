@@ -51,7 +51,7 @@ public class BaseTest {
 
     public void execAndCheckWithLinkedList(String input, String expecting) {
         boolean genDbg = true;
-        boolean trace = false;
+        boolean trace = true;
         execAndCheckWithLinkedList(input, expecting, trace, genDbg);
     }
 

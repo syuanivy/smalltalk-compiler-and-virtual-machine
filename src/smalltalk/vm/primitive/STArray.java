@@ -27,38 +27,45 @@ public class STArray extends STObject {
         STObject receiverObj = ctx.stack[firstArg - 1];
         STObject result = vm.nil();
         STObject arg1, arg2;
+        int index, size;
         switch ( primitive ) {
             case Array_Class_NEW:
                 arg1 = ctx.pop();// size of the array to new, should be STInteger
                 ctx.sp--; //pop receiver
                 if(! (arg1 instanceof STInteger))
                     throw new MessageNotUnderstood("array size not a integer?", null);
-                int size = ((STInteger) arg1).v;
+                size = ((STInteger) arg1).v;
                 result = new STArray(vm, size, vm.nil());
-                ctx.push(result);
                 break;
             case Array_SIZE:
                 ctx.sp--; //pop receiver, no argument
                 if(!(receiverObj instanceof STArray))
                     throw new MessageNotUnderstood("receiver not STArray", null);
-                int l = ((STArray) receiverObj).elements.length;
-                result = vm.newInteger(l);
-                ctx.push(result);
+                size = ((STArray) receiverObj).elements.length;
+                result = vm.newInteger(size);
+                break;
+            case Array_AT:
+                arg1 = ctx.pop(); // index i of the STArray
+                if(! (arg1 instanceof STInteger))
+                    throw new MessageNotUnderstood("index is not an integer?", null);
+                index = ((STInteger) arg1).v - 1;
+                if(!(receiverObj instanceof STArray))
+                    throw new MessageNotUnderstood("receiver not STArray", null);
+                result = ((STArray)receiverObj).elements[index];
+                ctx.sp--;//pop the receiver array
                 break;
             case Array_AT_PUT:
-                arg2 = ctx.pop(); //else blk
-                arg1 = ctx.pop(); //if blk
-                ctx.pop(); //pop receiver
-                /*if(receiverObj.b){
-                    ctx.push(arg1);
-                    BlockDescriptor.perform(ctx, 0, Primitive.valueOf("BlockDescriptor_VALUE"));
-                }else{
-                    ctx.push(arg2);
-                    BlockDescriptor.perform(ctx,0,Primitive.valueOf("BlockDescriptor_VALUE"));
-                }
-                result = null;*/
-                break;
+                arg2 = ctx.pop(); //v to put into element
+                arg1 = ctx.pop(); //index i to be modified in the elements
+                ctx.sp--; //pop receiver
 
+                if(! (arg1 instanceof STInteger))
+                    throw new MessageNotUnderstood("index is not an integer?", null);
+                index = ((STInteger) arg1).v - 1;
+                if(!(receiverObj instanceof STArray))
+                    throw new MessageNotUnderstood("receiver not STArray", null);
+                ((STArray) receiverObj).elements[index] = arg2;
+                break;
         }
         return result;
 	}

@@ -340,6 +340,9 @@ public class VirtualMachine {
     public STCharacter newCharacter(char c){
         return new STCharacter(this, (int)c);
     }
+    public STCharacter newCharacter(int c){
+        return new STCharacter(this, c);
+    }
 
     public STBoolean newBoolean(boolean b) {
         return (STBoolean)systemDict.lookup(String.valueOf(b));

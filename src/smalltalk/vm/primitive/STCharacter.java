@@ -1,6 +1,7 @@
 package smalltalk.vm.primitive;
 
 import smalltalk.vm.VirtualMachine;
+import smalltalk.vm.exceptions.MessageNotUnderstood;
 
 public class STCharacter extends STObject {
 	public final int c;
@@ -11,7 +12,30 @@ public class STCharacter extends STObject {
 	}
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
-		return null;
+        VirtualMachine vm = ctx.vm;
+        int firstArg = ctx.sp - nArgs + 1;
+        STObject receiverObj = ctx.stack[firstArg - 1];
+        STObject result = vm.nil();
+        STObject arg1;
+        int c;
+        switch ( primitive ) {
+            case Character_Class_NEW:
+                arg1 = ctx.pop();// int value of the new character
+                ctx.sp--; //pop receiver, 'Character'
+                if(! (arg1 instanceof STInteger))
+                    throw new MessageNotUnderstood("new char input not a integer?", null);
+                c = ((STInteger) arg1).v;
+                result = vm.newCharacter(c);
+                break;
+            case Character_ASINTEGER:
+                ctx.sp--; //pop receiver, no argument
+                if(!(receiverObj instanceof STCharacter))
+                    throw new MessageNotUnderstood("receiver not STCharacter", null);
+                c = ((STCharacter) receiverObj).c;
+                result = vm.newInteger(c);
+                break;
+        }
+        return result;
 	}
 
 	@Override
