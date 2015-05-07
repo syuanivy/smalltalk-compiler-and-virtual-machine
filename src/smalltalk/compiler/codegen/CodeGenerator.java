@@ -17,6 +17,7 @@ import smalltalk.misc.Utils;
 import smalltalk.vm.Bytecode;
 import smalltalk.vm.primitive.STCompiledBlock;
 import smalltalk.vm.primitive.STMetaClassObject;
+import smalltalk.vm.primitive.STString;
 
 import java.util.HashMap;
 import java.util.List;
@@ -361,10 +362,16 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         STCompiledBlock compiledBlock = new STCompiledBlock(scope, isClassMethod);
         compiledBlock.bytecode = code.bytes();
         compiledBlock.literals = blockToStrings.get(scope).toArray();
+        compiledBlock.literalsAsSTStrings = new STString[compiledBlock.literals.length];
+        literalAsString();
         return compiledBlock;
     }
 
-	public int getLiteralIndex(String text) {
+    private void literalAsString() {
+
+    }
+
+    public int getLiteralIndex(String text) {
 /*        StringTable strings = blockToStrings.get(currentScope);
         String[] list = strings.toArray();
         for(int i = 0; i< list.length; i++){

@@ -6,7 +6,7 @@ public class STString extends STObject {
 	public final String s;
 
 	public STString(VirtualMachine vm, char c) {
-		this(vm, String.valueOf(c));
+        this(vm, String.valueOf(c));
 	}
 
 	public STString(VirtualMachine vm, String s) {

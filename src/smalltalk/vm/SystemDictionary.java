@@ -4,7 +4,9 @@ import org.antlr.symtab.Symbol;
 import smalltalk.compiler.semantics.STClass;
 import smalltalk.compiler.semantics.STMethod;
 import smalltalk.compiler.semantics.STSymbolTable;
+import smalltalk.vm.primitive.STBoolean;
 import smalltalk.vm.primitive.STMetaClassObject;
+import smalltalk.vm.primitive.STNil;
 import smalltalk.vm.primitive.STObject;
 
 import java.util.Collection;
@@ -47,6 +49,9 @@ public class SystemDictionary {
 	public void initPredefinedObjects() {
         STObject transcript = new STObject(lookupClass("TranscriptStream"));
         define("Transcript", transcript);
+        define("true", new STBoolean(vm, true));
+        define("false", new STBoolean(vm, false));
+        define("nil", new STNil(vm));
 
     }
 

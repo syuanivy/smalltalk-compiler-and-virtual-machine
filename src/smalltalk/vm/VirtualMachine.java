@@ -218,7 +218,7 @@ public class VirtualMachine {
                     result = ctx.pop();
                     BlockContext returned = ctx.enclosingMethodContext;
                     if(returned.enclosingContext != null) // RETURNED
-                        throw new BlockCannotReturn(ctx.compiledBlock.qualifiedName + " can't trigger return again from method " + returned.compiledBlock.qualifiedName,null);
+                        throw new BlockCannotReturn(ctx.compiledBlock.errorName + " can't trigger return again from method " + returned.compiledBlock.qualifiedName,null);
                     BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
                     if(returnToCtx == null)
                         return result;
@@ -326,11 +326,11 @@ public class VirtualMachine {
     }
 
     public STInteger newInteger(int v) {
-        return null;
+        return new STInteger(this, v);
     }
 
     public STFloat newFloat(float v) {
-        return null;
+        return new STFloat(this, v);
     }
 
     public STString newString(String s) {
@@ -342,11 +342,11 @@ public class VirtualMachine {
     }
 
     public STBoolean newBoolean(boolean b) {
-        return new STBoolean(this, b);
+        return (STBoolean)systemDict.lookup(String.valueOf(b));
     }
 
     public STNil nil() {
-        return new STNil(this);
+        return (STNil)systemDict.lookup("nil");
     }
 
     public int consumeShort(int index) {
