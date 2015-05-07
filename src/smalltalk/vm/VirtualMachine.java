@@ -4,6 +4,7 @@ import org.antlr.symtab.ClassSymbol;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Utils;
 import smalltalk.compiler.semantics.STClass;
+import smalltalk.compiler.semantics.STMethod;
 import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.exceptions.*;
 import smalltalk.vm.primitive.*;
@@ -64,9 +65,13 @@ public class VirtualMachine {
         mainCtx.enclosingContext = null;//??
         pushContext(mainCtx);
 
-        int index, delta;
+        int nArgs, firstArg;
+        int index, delta, litindex;
+        String msgName;
         BlockContext dest;
-        STObject field;
+        STObject recv, field, result;
+        STCompiledBlock methodcalled;
+        Primitive p;
         // fetch-decode-execute loop
         while ( ctx.ip < ctx.compiledBlock.bytecode.length ) {
             if ( trace ) traceInstr(); // show instr first then stack after to show results
@@ -143,24 +148,55 @@ public class VirtualMachine {
                     ctx.pop();
                     break;
                 case Bytecode.SEND:
-                    // done on the fly, not to be trusted :)
-                    int nArgs = consumeShort(ctx.ip);
-                    int firstArg = ctx.sp - nArgs + 1;
-                    STObject recv = ctx.stack[firstArg-1];
-                    int litindex = consumeShort(ctx.ip);
-                    String msgName = ctx.compiledBlock.literals[litindex];
-                    STCompiledBlock blk = recv.getSTClass().resolveMethod(msgName);
+                    nArgs = consumeShort(ctx.ip);
+                    firstArg = ctx.sp - nArgs + 1;
+                    recv = ctx.stack[firstArg-1];
+                    litindex = consumeShort(ctx.ip);
+                    msgName = ctx.compiledBlock.literals[litindex];
+                    methodcalled = recv.getSTClass().resolveMethod(msgName);
                     // if null, throw MessageNotUnderstood
-                    if ( blk.isPrimitive() ) {
-                        Primitive p = blk.primitive;
-                        STObject result = blk.primitive.perform(ctx, nArgs);
+                    if(methodcalled == null)
+                        throw new MessageNotUnderstood(msgName, null);
+                    if(methodcalled.name.contains("static ") && !(recv instanceof STMetaClassObject)) // how about others?
+                        throw new ClassMessageSentToInstance(methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName(),null);
+
+                    if ( methodcalled.isPrimitive() ) {
+                        result = methodcalled.primitive.perform(ctx, nArgs);
                         if ( result!=null ) {
                             ctx.push(result);
                         }
                     } else { // it's a method call
                         // push context
 
-                        BlockContext call = new BlockContext(this,blk, recv);
+                        BlockContext call = new BlockContext(this,methodcalled, recv);
+                        ctx.pop();
+                        call.enclosingMethodContext = call;
+
+                        pushContext(call);
+                    }
+                    break;
+                case Bytecode.SEND_SUPER:
+                    nArgs = consumeShort(ctx.ip);
+                    firstArg = ctx.sp - nArgs + 1;
+                    recv = ctx.stack[firstArg-1];
+                    litindex = consumeShort(ctx.ip);
+                    msgName = ctx.compiledBlock.literals[litindex];
+                    methodcalled = recv.getSTClass().resolveMethod(msgName);
+                    // if null, throw MessageNotUnderstood
+                    if(methodcalled == null)
+                        throw new MessageNotUnderstood(msgName, null);
+                    if(methodcalled.name.contains("static ") && recv instanceof STInteger) // how about others?
+                        throw new ClassMessageSentToInstance(methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName(),null);
+
+                    if ( methodcalled.isPrimitive() ) {
+                        result = methodcalled.primitive.perform(ctx, nArgs);
+                        if ( result!=null ) {
+                            ctx.push(result);
+                        }
+                    } else { // it's a method call
+                        // push context
+
+                        BlockContext call = new BlockContext(this,methodcalled, recv);
                         ctx.pop();
                         call.enclosingMethodContext = call;
 
@@ -169,21 +205,25 @@ public class VirtualMachine {
                     break;
                 case Bytecode.BLOCK:
                     index = consumeShort(ctx.ip);
-                    blk = ctx.enclosingMethodContext.compiledBlock.blocks[index];
-                    BlockDescriptor bd = new BlockDescriptor(blk, ctx);
+                    methodcalled = ctx.enclosingMethodContext.compiledBlock.blocks[index];
+                    BlockDescriptor bd = new BlockDescriptor(methodcalled, ctx);
                     ctx.push(bd);
                     break;
                 case Bytecode.BLOCK_RETURN:
-                    STObject v = ctx.pop();
+                    result = ctx.pop();
                     popContext();
-                    ctx.push(v);
+                    ctx.push(result);
                     break;
                 case Bytecode.RETURN:
-                    STObject returnValue = ctx.pop();
+                    result = ctx.pop();
+                    BlockContext returned = ctx.enclosingMethodContext;
+                    if(returned.enclosingContext != null) // RETURNED
+                        throw new BlockCannotReturn(ctx.compiledBlock.qualifiedName + " can't trigger return again from method " + returned.compiledBlock.qualifiedName,null);
                     BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
                     if(returnToCtx == null)
-                        return returnValue;
-                    returnToCtx.push(returnValue);
+                        return result;
+                    returnToCtx.push(result);
+                    ctx.enclosingMethodContext.enclosingContext = BlockContext.RETURNED;
                     ctx = returnToCtx;
                     break;
                 case Bytecode.DBG:

@@ -61,6 +61,9 @@ public class STCompiledBlock {
 	/** The fully qualified name for this block or method like foo>>x or T>>x */
 	public String qualifiedName;
 
+    /**The error name when a class method is sent to Instance**/
+    public String errorName;
+
 	/** Of which class is this block a member? */
 	public STMetaClassObject enclosingClass;
 
@@ -99,6 +102,7 @@ public class STCompiledBlock {
         else
             name = blk.getName();
         qualifiedName = blk.getQualifiedName(">>");
+        errorName = getErrorName(blk, ">>");
         STClass classSymbol = blk.getEnclosingClass(STClass.class);
        // enclosingClass = new STMetaClassObject(classSymbol);?? how to initialize this?
         int Nargs = 0;
@@ -137,8 +141,9 @@ public class STCompiledBlock {
             primitive = ((STPrimitiveMethod)blk).primitive;
         else
             primitive = null;
-
 	}
+
+
 
 
     public boolean isPrimitive() { return primitive!=null; }
@@ -163,4 +168,9 @@ public class STCompiledBlock {
 					);
 		return template.render();
 	}
+
+    //for ClassMethodSentToInstance
+    public String getErrorName(STBlock blk, String scopePathSeparator) {
+        return blk.getEnclosingClass(STClass.class).getName() + scopePathSeparator + this.name;
+    }
 }
