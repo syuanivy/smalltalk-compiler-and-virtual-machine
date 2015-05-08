@@ -312,10 +312,9 @@ public class VirtualMachine {
 
     public static STObject TranscriptStream_SHOW(BlockContext ctx, int nArgs, Primitive primitive) {
         VirtualMachine vm = ctx.vm;
-        vm.assertNumOperands(nArgs + 1); // ensure args + receiver
         int firstArg = ctx.sp - nArgs + 1;
         STObject receiverObj = ctx.stack[firstArg - 1];
-        vm.assertEqualBackingTypes(receiverObj, "TranscriptStream");
+
         STObject arg = ctx.stack[firstArg];
         System.out.println(arg.asString());
         ctx.sp -= nArgs + 1; // pop receiver and arg
@@ -496,11 +495,5 @@ public class VirtualMachine {
         }
     }
 
-    public void assertNumOperands(int i) {
-
-    }
-    public void assertEqualBackingTypes(STObject receiverObj, String transcriptStream){
-
-    }
 
 }

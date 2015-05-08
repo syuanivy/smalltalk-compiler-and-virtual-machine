@@ -12,101 +12,210 @@ public class STInteger extends STObject {
 	}
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
+        VirtualMachine vm = ctx.vm;
         STObject result = ctx.vm.nil();
-        STObject x, y;
-        int i_x, i_y, i_z;
-        boolean b;
+
         switch (primitive){
             //x perform y
             case Integer_ADD:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                i_z = i_x + i_y;
-                result = new STInteger(ctx.vm, i_z);
+                result = integerAdd(ctx, vm);
                 break;
             case Integer_SUB:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                i_z = i_x - i_y;
-                result = new STInteger(ctx.vm, i_z);
+                result = integerSub(ctx, vm);
                 break;
             case Integer_MULT:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                i_z = i_x * i_y;
-                result = new STInteger(ctx.vm, i_z);
+                result = intergerMult(ctx, vm);
                 break;
             case Integer_DIV:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                i_z = i_x / i_y;
-                result = new STInteger(ctx.vm, i_z);
+                result = integerDiv(ctx, vm);
                 break;
             case Integer_LT:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                b = (i_x < i_y);
-                result = ctx.vm.newBoolean(b);
+                result = integerLT(ctx, vm);
                 break;
             case Integer_LE:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                b = (i_x <= i_y);
-                result = ctx.vm.newBoolean(b);
+                result = integerLE(ctx, vm);
                 break;
             case Integer_GT:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                b = (i_x > i_y);
-                result = ctx.vm.newBoolean(b);
+                result = integerGT(ctx, vm);
                 break;
             case Integer_GE:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                b = (i_x >= i_y);
-                result = ctx.vm.newBoolean(b);
+                result = integerGE(ctx, vm);
                 break;
             case Integer_EQ:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                b = (i_x == i_y);
-                result = ctx.vm.newBoolean(b);
+                result = integerEQ(ctx, vm);
                 break;
             case Integer_MOD:
-                y = ctx.pop();
-                x = ctx.pop();
-                i_x = ((STInteger)x).v;
-                i_y = ((STInteger)y).v;
-                i_z = i_x % i_y;
-                result = new STInteger(ctx.vm, i_z);
+                result = integerMod(ctx, vm);
                 break;
             case Integer_ASFLOAT:
-                x = ctx.pop();
-                result = new STFloat( ctx.vm, ((STInteger)x).v);
+                STObject integer = ctx.pop();
+                result = vm.newFloat(((STInteger) integer).v);
                 break;
         }
 		return result;
 	}
 
-	@Override
+    private static STObject integerMod(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        int i_z;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        i_z = i_x % i_y;
+        result = vm.newInteger(i_z);
+        return result;
+    }
+
+    private static STObject integerEQ(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        boolean b;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        b = (i_x == i_y);
+        result = vm.newBoolean(b);
+        return result;
+    }
+
+    private static STObject integerGE(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        boolean b;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        b = (i_x >= i_y);
+        result = vm.newBoolean(b);
+        return result;
+    }
+
+    private static STObject integerGT(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        boolean b;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        b = (i_x > i_y);
+        result = vm.newBoolean(b);
+        return result;
+    }
+
+    private static STObject integerLE(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        boolean b;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        b = (i_x <= i_y);
+        result = vm.newBoolean(b);
+        return result;
+    }
+
+    private static STObject integerLT(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        boolean b;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        b = (i_x < i_y);
+        result = vm.newBoolean(b);
+        return result;
+    }
+
+    private static STObject integerDiv(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        int i_z;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        i_z = i_x / i_y;
+        result = vm.newInteger(i_z);
+        return result;
+    }
+
+    private static STObject intergerMult(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        int i_z;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        i_z = i_x * i_y;
+        result = vm.newInteger(i_z);
+        return result;
+    }
+
+    private static STObject integerSub(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        int i_z;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        i_z = i_x - i_y;
+        result = vm.newInteger(i_z);
+        return result;
+    }
+
+    private static STObject integerAdd(BlockContext ctx, VirtualMachine vm) {
+        STObject y;
+        STObject x;
+        int i_x;
+        int i_y;
+        int i_z;
+        STObject result;
+        y = ctx.pop();
+        x = ctx.pop();
+        i_x = ((STInteger)x).v;
+        i_y = ((STInteger)y).v;
+        i_z = i_x + i_y;
+        result = vm.newInteger(i_z);
+        return result;
+    }
+
+    @Override
 	public String toString() {
 		return String.valueOf(v);
 	}

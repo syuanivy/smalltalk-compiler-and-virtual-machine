@@ -50,7 +50,6 @@ public class STMetaClassObject extends STObject {
 
     public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
         VirtualMachine vm = ctx.vm;
-        ctx.vm.assertNumOperands(nArgs+1); // ensure args + receiver
         int firstArg = ctx.sp - nArgs + 1;
         STObject receiver = null;
         STObject result = vm.nil();

@@ -1,10 +1,8 @@
 package smalltalk.vm.primitive;
 
-import org.antlr.symtab.FieldSymbol;
+
 import smalltalk.vm.VirtualMachine;
 import smalltalk.vm.exceptions.InternalVMException;
-
-import java.util.List;
 
 /** A Smalltalk instance. All fields initialized to nil.
  *  We combine all fields from all inherited classes into this one.  There is
@@ -25,17 +23,17 @@ public class STObject {
 		this.metaclass = metaclass;
         if(metaclass != null){
             fields = new STObject[metaclass.getNumberOfFields()];
-            for(int i = 0; i < metaclass.getNumberOfFields(); i++){
+            for(int i = 0; i < metaclass.getNumberOfFields(); i++)
                 fields[i] = metaclass.vm.nil();
-            }
         }
         else{
             fields = null;
         }
-            		// Create empty slot for each field directly defined by metaclass
-		// plus any fields inherited from super class.
-		// Note: native backing objects like STBoolean do not have smalltalk-visible fields
-		// so nfields == 0 and therefore vm can be null.
+        /* Create empty slot for each field directly defined by metaclass
+		 plus any fields inherited from super class.
+		 Note: native backing objects like STBoolean do not have smalltalk-visible fields
+		 so nfields == 0 and therefore vm can be null.
+		 */
 	}
 
 	/** Which fields are directly defined? null if no fields */
@@ -50,9 +48,8 @@ public class STObject {
 
 	/** Analogous to Java's toString() */
 	public STString asString() {
-		if ( metaclass==null ) {
+		if ( metaclass==null )
 			throw new InternalVMException(null, "object "+toString()+" has null metaclass", null);
-		}
         return metaclass.vm.newString(toString());
 	}
 
@@ -63,38 +60,41 @@ public class STObject {
      */
     public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
         VirtualMachine vm = ctx.vm;
-        vm.assertNumOperands(nArgs+1); // ensure args + receiver
-        // index of 1st arg on opnd stack; use only if arg(s) present for primitive
         int firstArg = ctx.sp - nArgs + 1;
         STObject receiver = ctx.stack[firstArg-1];
         STObject result = vm.nil();
         switch ( primitive ) {
             case Object_ASSTRING:
+                ctx.sp--; //pop receiver, no arg
                 // if asString not overridden in Smalltalk, create an STString
                 // from the *java* object's toString(); see STObject.asString()
                 result = receiver.asString();
-                ctx.sp--; //pop receiver
                 break;
             case Object_CLASSNAME :
-                ctx.sp--;
+                ctx.sp--; //pop receiver
                 String classname = receiver.metaclass.getName();
                 result = vm.newString(classname);
                 break;
             case Object_SAME : // SmallTalk == op.  same as == in Java (same object)
-                STObject arg = ctx.stack[firstArg];
-                ctx.sp--;
-                ctx.sp--;
+                STObject arg = ctx.stack[firstArg]; //one arg
+                ctx.sp -= 2; //pop arg and receiver
                 result = vm.newBoolean(receiver == arg);
                 break;
             case Object_Class_BASICNEW:
-                ctx.sp--;
+                ctx.sp--; // pop receiver
                 result = receiver; //not used
                 break;
             case Object_Class_ERROR:
+                vm.error(receiver.asString().toString());
+                ctx.sp -= 2; //pop receiver and arg
                 break;
             case Object_PRINT:
+                System.out.println(receiver.asString());//
+                ctx.sp--; //pop receiver
                 break;
             case Object_HASH:
+                result = vm.newInteger(receiver.hashCode());
+                ctx.sp--;  //pop receiver
                 break;
         }
         return result;

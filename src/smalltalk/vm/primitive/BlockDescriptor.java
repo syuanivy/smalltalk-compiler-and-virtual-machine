@@ -66,7 +66,6 @@ public class BlockDescriptor extends STObject {
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
         VirtualMachine vm = ctx.vm;
-        vm.assertNumOperands(nArgs+1); // ensure args + receiver
         // index of 1st arg on opnd stack; use only if arg(s) present for primitive
         int firstArg = ctx.sp - nArgs + 1;
         BlockDescriptor receiver = (BlockDescriptor) ctx.stack[firstArg-1];

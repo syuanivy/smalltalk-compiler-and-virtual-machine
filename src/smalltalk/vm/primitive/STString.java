@@ -16,7 +16,6 @@ public class STString extends STObject {
 
 	public static STObject perform(BlockContext ctx, int nArgs, Primitive primitive) {
 		VirtualMachine vm = ctx.vm;
-		vm.assertNumOperands(nArgs+1); // ensure args + receiver
 		int firstArg = ctx.sp - nArgs + 1;
 		STObject receiverObj = ctx.stack[firstArg - 1];
 		STObject result = vm.nil();

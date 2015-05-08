@@ -143,11 +143,10 @@ public class STCompiledBlock {
     }
 
     private boolean isClassMethod(STBlock blk) {
-        if(blk instanceof STMethod){
+        if(blk instanceof STMethod)
             return ((STMethod)blk).isClassMethod; //defined when exit classMethod
-        }else{
+        else
             return false;
-        }
     }
 
     private Primitive getPrimitive(STBlock blk) {
