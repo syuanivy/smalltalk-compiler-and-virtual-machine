@@ -25,7 +25,7 @@ public class STBoolean extends STObject {
                 break;
             case Boolean_IFTRUE:
                 arg1 = ctx.pop();
-                ctx.pop(); // pop receiver
+                ctx.sp--;
                 ctx.push(arg1);//push arg, which will become the receiver in the perform below
                 if(receiverObj.b){// if true, execute the blk argument
                     BlockDescriptor.perform(ctx, 0, Primitive.valueOf("BlockDescriptor_VALUE"));
@@ -35,7 +35,7 @@ public class STBoolean extends STObject {
             case Boolean_IFTRUE_IFFALSE:
                 arg2 = ctx.pop(); //else blk
                 arg1 = ctx.pop(); //if blk
-                ctx.pop(); //pop receiver
+                ctx.sp--;
                 if(receiverObj.b){
                     ctx.push(arg1);
                     BlockDescriptor.perform(ctx, 0, Primitive.valueOf("BlockDescriptor_VALUE"));
@@ -45,7 +45,6 @@ public class STBoolean extends STObject {
                 }
                 result = null;
                 break;
-
         }
         return result;
     }

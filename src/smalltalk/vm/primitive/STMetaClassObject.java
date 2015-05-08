@@ -30,11 +30,11 @@ public class STMetaClassObject extends STObject {
         this.vm = vm;
         this.name = classSymbol.getName();
         this.superClass = vm.systemDict.lookupClass(classSymbol.getSuperClassName());
-        fields = new ArrayList<>();
         // make space for ALL fields, including inherited ones
-        for (FieldSymbol f : classSymbol.getFields()) {
+        fields = new ArrayList<>();
+        for (FieldSymbol f : classSymbol.getFields())
             fields.add(f.getName());
-        }
+
         // for all methods defined in classSymbol, map method name to its compiled method
         methods = new HashMap<>();
         for (MethodSymbol m : classSymbol.getDefinedMethods()) {

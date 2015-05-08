@@ -80,9 +80,8 @@ public class BlockDescriptor extends STObject {
                 break;
             case BlockDescriptor_VALUE_1_ARG:
                 bc = new BlockContext(vm, (receiver));
-                ctx.sp--;
                 arg1 = ctx.stack[firstArg];
-                ctx.sp--;
+                ctx.sp -= 2;
                 bc.locals[0] = arg1;
                 vm.pushContext(bc);
                 break;

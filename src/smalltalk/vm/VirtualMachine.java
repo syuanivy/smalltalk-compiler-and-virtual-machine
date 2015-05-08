@@ -1,10 +1,8 @@
 package smalltalk.vm;
 
-import org.antlr.symtab.ClassSymbol;
-import org.antlr.symtab.Symbol;
+
 import org.antlr.symtab.Utils;
-import smalltalk.compiler.semantics.STClass;
-import smalltalk.compiler.semantics.STMethod;
+
 import smalltalk.compiler.semantics.STSymbolTable;
 import smalltalk.vm.exceptions.*;
 import smalltalk.vm.primitive.*;
@@ -62,7 +60,7 @@ public class VirtualMachine {
     public STObject exec(STObject self, STCompiledBlock method) {
         BlockContext mainCtx = new BlockContext(this, method, self);
         mainCtx.enclosingMethodContext = mainCtx;
-        mainCtx.enclosingContext = null;//??
+        mainCtx.enclosingContext = null;
         pushContext(mainCtx);
 
         int nArgs, firstArg;
@@ -71,7 +69,6 @@ public class VirtualMachine {
         BlockContext dest;
         STObject recv, field, result;
         STCompiledBlock methodcalled;
-        Primitive p;
         // fetch-decode-execute loop
 
         while ( ctx.ip < ctx.compiledBlock.bytecode.length ) {
@@ -122,14 +119,7 @@ public class VirtualMachine {
                 case Bytecode.PUSH_LITERAL:
                     index = consumeShort(ctx.ip); //get index of the literal
                     String s = ctx.compiledBlock.literals[index];
-                    STString literal;
-                    if(ctx.compiledBlock.literalsAsSTStrings[index] != null){
-                        ctx.push(ctx.compiledBlock.literalsAsSTStrings[index]);
-                    } else{
-                        literal = newString(s);
-                        ctx.compiledBlock.literalsAsSTStrings[index] = literal;
-                        ctx.push(literal);
-                    }
+                    pushLiteral(index, s);
                     break;
                 case Bytecode.PUSH_GLOBAL:
                     index = consumeShort(ctx.ip);
@@ -162,29 +152,14 @@ public class VirtualMachine {
                     litindex = consumeShort(ctx.ip);
                     msgName = ctx.compiledBlock.literals[litindex];
                     methodcalled = recv.getSTClass().resolveMethod(msgName);
-                    // if null, throw MessageNotUnderstood
-                    if(methodcalled == null)
-                        throw new MessageNotUnderstood(msgName, null);
-                    if(methodcalled.isClassMethod && !(recv instanceof STMetaClassObject))
-                        error("ClassMessageSentToInstance", methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName());
 
-                    if(!methodcalled.isClassMethod && (recv instanceof STMetaClassObject))
-                        error("MessageNotUnderstood", methodcalled.name + " is an instance method sent to class object " + recv.getSTClass().getName());
+                    checkError(msgName, recv, methodcalled);
 
-                    if ( methodcalled.isPrimitive() ) {
-                        result = methodcalled.primitive.perform(ctx, nArgs);
-                        if ( result!=null ) {
-                            ctx.push(result);
-                        }
-                    } else { // it's a method call
-                        // push context
+                    if ( methodcalled.isPrimitive() )
+                        sendPrimitive(nArgs, methodcalled);
+                    else // it's a method call
+                        sendNonPrimitive(recv, methodcalled);
 
-                        BlockContext call = new BlockContext(this,methodcalled, recv);
-                        ctx.pop();
-                        call.enclosingMethodContext = call;
-
-                        pushContext(call);
-                    }
                     break;
                 case Bytecode.SEND_SUPER:
                     nArgs = consumeShort(ctx.ip);
@@ -193,26 +168,14 @@ public class VirtualMachine {
                     litindex = consumeShort(ctx.ip);
                     msgName = ctx.compiledBlock.literals[litindex];
                     methodcalled = recv.getSTClass().superClass.resolveMethod(msgName);
-                    // if null, throw MessageNotUnderstood
-                    if(methodcalled == null)
-                        throw new MessageNotUnderstood(msgName, null);
-                    if(methodcalled.name.contains("static ") && recv instanceof STInteger) // how about others?
-                        error("ClassMessageSentToInstance", methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName());
 
-                    if ( methodcalled.isPrimitive() ) {
-                        result = methodcalled.primitive.perform(ctx, nArgs);
-                        if ( result!=null ) {
-                            ctx.push(result);
-                        }
-                    } else { // it's a method call
-                        // push context
+                    checkError(msgName, recv, methodcalled);
 
-                        BlockContext call = new BlockContext(this,methodcalled, recv);
-                        ctx.pop();
-                        call.enclosingMethodContext = call;
+                    if ( methodcalled.isPrimitive() )
+                        sendPrimitive(nArgs, methodcalled);
+                    else // it's a method call
+                        sendNonPrimitive(recv, methodcalled);
 
-                        pushContext(call);
-                    }
                     break;
                 case Bytecode.BLOCK:
                     index = consumeShort(ctx.ip);
@@ -228,11 +191,14 @@ public class VirtualMachine {
                 case Bytecode.RETURN:
                     result = ctx.pop();
                     BlockContext returned = ctx.enclosingMethodContext;
-                    if(returned.enclosingContext != null) // RETURNED
-                        error("BlockCannotReturn",ctx.compiledBlock.errorName + " can't trigger return again from method " + returned.compiledBlock.qualifiedName);
+
+                    checkReturned(returned);
+
                     BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
+
                     if(returnToCtx == null)
                         return result;
+
                     returnToCtx.push(result);
                     ctx.enclosingMethodContext.enclosingContext = BlockContext.RETURNED;
                     ctx = returnToCtx;
@@ -247,6 +213,47 @@ public class VirtualMachine {
             if ( trace ) traceStack(); // show stack *after* execution
         }
         return ctx!=null ? ctx.receiver : null;
+    }
+
+    private void checkReturned(BlockContext returned) {
+        if(returned.enclosingContext != null) // RETURNED
+            error("BlockCannotReturn",ctx.compiledBlock.errorName + " can't trigger return again from method " + returned.compiledBlock.qualifiedName);
+    }
+
+    private void sendNonPrimitive(STObject recv, STCompiledBlock methodcalled) {
+        BlockContext call = new BlockContext(this,methodcalled, recv);
+        ctx.pop();
+        call.enclosingMethodContext = call;
+        pushContext(call);
+    }
+
+    private void sendPrimitive(int nArgs, STCompiledBlock methodcalled) {
+        STObject result;
+        result = methodcalled.primitive.perform(ctx, nArgs);
+        if ( result!=null ) {
+            ctx.push(result);
+        }
+    }
+
+    private void checkError(String msgName, STObject recv, STCompiledBlock methodcalled) {
+        if(methodcalled == null)
+            throw new MessageNotUnderstood(msgName, null);
+        if(methodcalled.isClassMethod && !(recv instanceof STMetaClassObject))
+            error("ClassMessageSentToInstance", methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName());
+
+        if(!methodcalled.isClassMethod && (recv instanceof STMetaClassObject))
+            error("MessageNotUnderstood", methodcalled.name + " is an instance method sent to class object " + recv.getSTClass().getName());
+    }
+
+    private void pushLiteral(int index, String s) {
+        STString literal;
+        if(ctx.compiledBlock.literalsAsSTStrings[index] != null){
+            ctx.push(ctx.compiledBlock.literalsAsSTStrings[index]);
+        } else{
+            literal = newString(s);
+            ctx.compiledBlock.literalsAsSTStrings[index] = literal;
+            ctx.push(literal);
+        }
     }
 
     private BlockContext getDestinationBlock(int delta) {
@@ -325,18 +332,6 @@ public class VirtualMachine {
         return systemDict.lookupClass(id);
     }
 
-    public STObject newInstance(String className, Object ctorArg) {
-        return null;
-    }
-
-    public STObject newInstance(STMetaClassObject metaclass, Object ctorArg) {
-        return null;
-    }
-
-    public STObject newInstance(STMetaClassObject metaclass) {
-        return null;
-    }
-
     public STInteger newInteger(int v) {
         return new STInteger(this, v);
     }
@@ -345,9 +340,7 @@ public class VirtualMachine {
         return new STFloat(this, v);
     }
 
-    public STString newString(String s) {
-        return new STString(this, s);
-    }
+    public STString newString(String s) {return new STString(this, s);}
 
     public STCharacter newCharacter(char c){
         return new STCharacter(this, (int)c);
@@ -379,7 +372,6 @@ public class VirtualMachine {
 
     public int consumeChar(int index){
         int x = getShort(index); //same size as short
-   //     System.out.println("within consume: " + x);
         ctx.ip += Bytecode.OperandType.CHAR.sizeInBytes;
         return x;
     }
@@ -494,6 +486,4 @@ public class VirtualMachine {
             buf.append(r.toString());
         }
     }
-
-
 }
