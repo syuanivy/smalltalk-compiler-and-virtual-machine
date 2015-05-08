@@ -25,14 +25,21 @@ public class Compiler {
 	protected String fileName;
 	public boolean genDbg; // generate dbg file,line instructions
 
-	public Compiler() { symtab = new STSymbolTable();}
+	public Compiler() {
+        symtab = new STSymbolTable();
+        fileName = "<unknown>";
+    }
 
 	public Compiler(STSymbolTable symtab) {
-		this.symtab = symtab;
+        this.symtab = symtab;
+        fileName = "<string>";
 	}
 
 	public STSymbolTable compile(ANTLRInputStream input){
-        fileName = input.name;
+        if (input.name != null) {
+            String[] strings = input.name.split("/");
+            fileName = strings[strings.length - 1];
+        }
 		// parse class(es)
         ParserRuleContext tree = parseClasses(input);
         // define symbols
@@ -210,8 +217,7 @@ public class Compiler {
 
 
     public String getFileName() {
-        String[] strings = fileName.split("/");
-        return strings[strings.length-1];
+        return fileName;
     }
 
 //    public static Code dbg(int literalIndex, int line, int charPos) {

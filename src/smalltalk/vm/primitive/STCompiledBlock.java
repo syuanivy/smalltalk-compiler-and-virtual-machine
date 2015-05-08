@@ -96,8 +96,16 @@ public class STCompiledBlock {
  	 */
 	public final Primitive primitive;
 
-	public STCompiledBlock(STBlock blk, Boolean isClassMethod) {
-        if(isClassMethod)
+    public final boolean isClassMethod;
+
+	public STCompiledBlock(STBlock blk) {
+        if(blk instanceof STMethod){
+            this.isClassMethod = ((STMethod)blk).isClassMethod;
+        }else{
+            this.isClassMethod = false;
+        }
+
+        if(this.isClassMethod)
             name = "static " + blk.getName();
         else
             name = blk.getName();
@@ -110,15 +118,9 @@ public class STCompiledBlock {
 
         for(Symbol s: blk.getSymbols()){
             if(s instanceof ParameterSymbol){
-                s.setInsertionOrderNumber(Nargs);
                 Nargs++;
             }
-            else if(s instanceof FieldSymbol){
-                s.setInsertionOrderNumber(999);
-
-            }
             else if(s instanceof VariableSymbol){
-                s.setInsertionOrderNumber(Nlocals);
                 Nlocals++;
             }
         }

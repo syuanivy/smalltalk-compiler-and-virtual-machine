@@ -88,7 +88,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             code = code.join(Compiler.pop());         //pop (only if full body)
         code = code.join(Code.of(Bytecode.SELF));     //self
         code = code.join(Compiler.method_return());   //return
-        ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, code, false);
+        ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, code);
         popScope();
         popScope();
         //System.out.println(Bytecode.disassemble(ctx.scope.compiledBlock, 0));
@@ -111,7 +111,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     @Override
     public Code visitEmptyBody(@NotNull SmalltalkParser.EmptyBodyContext ctx) {
-        Code code = visitChildren(ctx);
+        Code code = Code.None;
+            if(compiler.genDbg)
+                code = Code.join(dbgAtEndBlock(ctx.stop),code);
         return code;
     }
 
@@ -153,16 +155,19 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         List<SmalltalkParser.BinaryExpressionContext> binaries = ctx.binaryExpression();
 
         StringBuffer keyword = new StringBuffer();
-        Code args = new Code();
 
         for(int i = 0; i < keywords.size(); i++){
             keyword.append(keywords.get(i).getText());
-            args.join(visit(binaries.get(i + 1))); //binaries[0] is dedicated to receiver
+            receiver.join(visit(binaries.get(i + 1))); //binaries[0] is dedicated to receiver
+        }
+        int index = getLiteralIndex(keyword.toString());
+        if(compiler.genDbg){
+            receiver.join(dbg(ctx.KEYWORD(0).getSymbol()));
         }
 
-        Code send = send(ctx.args.size(), keyword.toString());
-        Code code = receiver.join(args).join(send);
-        return code;
+        Code send = send(ctx.args.size(), index);
+        receiver.join(send);
+        return receiver;
 
     }
 
@@ -187,9 +192,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return code;
     }
 
-    private Code send(int numOfArgs, String keyword) {
+    private Code send(int numOfArgs, int index) {
       //  blockToStrings.get(currentScope).add(keyword);
-        int index = getLiteralIndex(keyword);
         return Code.of(Bytecode.SEND).join(Utils.shortToBytes(numOfArgs)).join(Utils.shortToBytes(index));
     }
     private Code sendSuper( String keyword) {
@@ -201,8 +205,14 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     @Override
     public Code visitUnaryMsgSend(@NotNull SmalltalkParser.UnaryMsgSendContext ctx) {
         Code unary = visit(ctx.unaryExpression());
-        Code send = send(0,ctx.ID().getText());
-        return unary.join(send);
+        int index = getLiteralIndex(ctx.ID().getText());
+
+        Code send = send(0,index);
+        unary.join(send);
+        if (compiler.genDbg){
+            unary = Code.join(dbg(ctx.ID().getSymbol()), unary);
+        }
+        return unary;
     }
 
     @Override
@@ -214,7 +224,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	public Code visitPrimitiveMethodBlock(@NotNull SmalltalkParser.PrimitiveMethodBlockContext ctx) {
         SmalltalkParser.MethodContext methodNode = (SmalltalkParser.MethodContext)ctx.getParent();
         Code code = visitChildren(ctx);
-        methodNode.scope.compiledBlock = getCompiledBlock(methodNode.scope, code, methodNode.scope.isClassMethod);
+        methodNode.scope.compiledBlock = getCompiledBlock(methodNode.scope, code);
 
         return code;
     }
@@ -223,11 +233,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	public Code visitSmalltalkMethodBlock(@NotNull SmalltalkParser.SmalltalkMethodBlockContext ctx) {
 		SmalltalkParser.MethodContext methodNode = (SmalltalkParser.MethodContext)ctx.getParent();
 //		System.out.println("Gen code for " + methodNode.scope.getName()+" "+getProgramSourceForSubtree(ctx));
-		Code code = new Code();
-        if(ctx.body() instanceof SmalltalkParser.EmptyBodyContext)
-             code = visitEmptyBody((SmalltalkParser.EmptyBodyContext)ctx.body());
-        else
-            code = visit(ctx.body());
+		Code code = visitChildren(ctx);
         if ( compiler.genDbg ) { // put dbg in front of push_self
             code = Code.join(code, dbgAtEndBlock(ctx.stop));
         }
@@ -240,7 +246,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         // always add ^self in case no return statement
         code = code.join(Compiler.push_self());
 		code = code.join(Compiler.method_return());
-		methodNode.scope.compiledBlock = getCompiledBlock(methodNode.scope, code, methodNode.scope.isClassMethod);
+		methodNode.scope.compiledBlock = getCompiledBlock(methodNode.scope, code);
 //		System.out.println(Bytecode.disassemble(methodNode.scope.compiledMethod, 0));
 		return code;
 	}
@@ -250,10 +256,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         pushScope(ctx.scope);
         Code code = Compiler.block(ctx.scope);
         Code blk = visitChildren(ctx);
-        if (blk.size() == 0)
-            blk = Compiler.push_nil();
-        blk = blk.join(Compiler.block_return());
-        ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, blk, false);
+        if (ctx.body().getChildCount() == 0)
+            blk = blk.join(Compiler.push_nil());
+        if(compiler.genDbg)
+            blk.join(dbgAtEndBlock(ctx.stop));
+        blk.join(Compiler.block_return());
+        ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, blk);
 //		System.out.println(Bytecode.disassemble(methodNode.scope.compiledMethod, 0));
         popScope();
         return code;
@@ -301,6 +309,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return code;
     }
 
+
     @Override
     public Code visitBinaryExpression(@NotNull SmalltalkParser.BinaryExpressionContext ctx) {
         //unary expression, no bop/args
@@ -313,9 +322,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         List<SmalltalkParser.BopContext> ops = ctx.bop();
         List<SmalltalkParser.UnaryExpressionContext> args = ctx.unaryExpression();
         for(int i = 0; i < ops.size(); i++){
-            Code arg = visit(args.get(i+1));//args[0] dedicated to receiver
+            receiver.join(visit(args.get(i + 1)));//args[0] dedicated to receiver
+            if(compiler.genDbg)
+                receiver= Code.join(dbg(ops.get(i).start), receiver);
+
             Code send = sendBop(ops.get(i));
-            receiver.join(arg).join(send);
+            receiver.join(send);
         }
         return receiver;
     }
@@ -324,11 +336,15 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         String keyword;
         if(ctx.opchar().size() == 0) // "-" only
             keyword = "-";
-        else if(ctx.opchar().size() == 1)            //single char
-            keyword = ctx.opchar(0).getText();
+        else if(ctx.opchar().size() == 1) {            //single char or ->
+            if (ctx.getText().startsWith("-"))
+                keyword = "-" + ctx.opchar(0).getText();
+            else
+                keyword = ctx.opchar(0).getText();
+        }
         else                                    //double chars
             keyword = ctx.opchar(0).getText() + ctx.opchar(1).getText();
-        return send(1, keyword);                //numOfArg == 1
+        return send(1, getLiteralIndex(keyword));                //numOfArg == 1
     }
 
     @Override
@@ -358,8 +374,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		currentScope = currentScope.getEnclosingScope();
 	}
 
-    private STCompiledBlock getCompiledBlock(STBlock scope, Code code, Boolean isClassMethod) {
-        STCompiledBlock compiledBlock = new STCompiledBlock(scope, isClassMethod);
+    private STCompiledBlock getCompiledBlock(STBlock scope, Code code) {
+        STCompiledBlock compiledBlock = new STCompiledBlock(scope);
         compiledBlock.bytecode = code.bytes();
         compiledBlock.literals = blockToStrings.get(scope).toArray();
         compiledBlock.literalsAsSTStrings = new STString[compiledBlock.literals.length];

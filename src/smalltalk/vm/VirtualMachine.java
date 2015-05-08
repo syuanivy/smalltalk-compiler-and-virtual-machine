@@ -73,8 +73,10 @@ public class VirtualMachine {
         STCompiledBlock methodcalled;
         Primitive p;
         // fetch-decode-execute loop
+
         while ( ctx.ip < ctx.compiledBlock.bytecode.length ) {
             if ( trace ) traceInstr(); // show instr first then stack after to show results
+            ctx.prev_ip = ctx.ip;
             int op = ctx.compiledBlock.bytecode[ctx.ip++];
             switch ( op ) {
                 case Bytecode.NIL:
@@ -157,9 +159,12 @@ public class VirtualMachine {
                     // if null, throw MessageNotUnderstood
                     if(methodcalled == null)
                         throw new MessageNotUnderstood(msgName, null);
-                    if(methodcalled.name.contains("static ") && !(recv instanceof STMetaClassObject)) // how about others?
-                        throw new ClassMessageSentToInstance(methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName(),null);
+                    if(methodcalled.isClassMethod && !(recv instanceof STMetaClassObject))
+                        error("ClassMessageSentToInstance", methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName());
 
+            /*        if(!methodcalled.isClassMethod && (recv instanceof STMetaClassObject))
+                        error("MessageNotUnderstood", methodcalled.name + " is an instance method sent to class object " + recv.getSTClass().getName());
+*/
                     if ( methodcalled.isPrimitive() ) {
                         result = methodcalled.primitive.perform(ctx, nArgs);
                         if ( result!=null ) {
@@ -181,12 +186,12 @@ public class VirtualMachine {
                     recv = ctx.stack[firstArg-1];
                     litindex = consumeShort(ctx.ip);
                     msgName = ctx.compiledBlock.literals[litindex];
-                    methodcalled = recv.getSTClass().resolveMethod(msgName);
+                    methodcalled = recv.getSTClass().superClass.resolveMethod(msgName);
                     // if null, throw MessageNotUnderstood
                     if(methodcalled == null)
                         throw new MessageNotUnderstood(msgName, null);
                     if(methodcalled.name.contains("static ") && recv instanceof STInteger) // how about others?
-                        throw new ClassMessageSentToInstance(methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName(),null);
+                        error("ClassMessageSentToInstance", methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName());
 
                     if ( methodcalled.isPrimitive() ) {
                         result = methodcalled.primitive.perform(ctx, nArgs);
@@ -218,7 +223,7 @@ public class VirtualMachine {
                     result = ctx.pop();
                     BlockContext returned = ctx.enclosingMethodContext;
                     if(returned.enclosingContext != null) // RETURNED
-                        throw new BlockCannotReturn(ctx.compiledBlock.errorName + " can't trigger return again from method " + returned.compiledBlock.qualifiedName,null);
+                        error("BlockCannotReturn",ctx.compiledBlock.errorName + " can't trigger return again from method " + returned.compiledBlock.qualifiedName);
                     BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
                     if(returnToCtx == null)
                         return result;
@@ -227,8 +232,10 @@ public class VirtualMachine {
                     ctx = returnToCtx;
                     break;
                 case Bytecode.DBG:
-                    ctx.ip += 2; //first arg, short
-                    ctx.ip +=4;  //second arg, int
+                    ctx.currentFile = ctx.compiledBlock.literals[consumeShort(ctx.ip)];
+                    int fileN = consumeInt(ctx.ip);
+                    ctx.currentCharPos = Bytecode.charPosFromCombined(fileN);
+                    ctx.currentLine = Bytecode.lineFromCombined(fileN);
                     break;
             }
             if ( trace ) traceStack(); // show stack *after* execution
