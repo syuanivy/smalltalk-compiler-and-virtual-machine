@@ -84,7 +84,7 @@ public class STObject {
                 STObject arg = ctx.stack[firstArg];
                 ctx.sp--;
                 ctx.sp--;
-                result = vm.newBoolean(receiver.toString() == arg.toString());
+                result = vm.newBoolean(receiver == arg);
                 break;
             case Object_Class_BASICNEW:
                 ctx.sp--;

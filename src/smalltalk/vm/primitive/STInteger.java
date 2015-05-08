@@ -56,7 +56,7 @@ public class STInteger extends STObject {
                 i_x = ((STInteger)x).v;
                 i_y = ((STInteger)y).v;
                 b = (i_x < i_y);
-                result = new STBoolean(ctx.vm, b);
+                result = ctx.vm.newBoolean(b);
                 break;
             case Integer_LE:
                 y = ctx.pop();
@@ -64,7 +64,7 @@ public class STInteger extends STObject {
                 i_x = ((STInteger)x).v;
                 i_y = ((STInteger)y).v;
                 b = (i_x <= i_y);
-                result = new STBoolean(ctx.vm, b);
+                result = ctx.vm.newBoolean(b);
                 break;
             case Integer_GT:
                 y = ctx.pop();
@@ -72,7 +72,7 @@ public class STInteger extends STObject {
                 i_x = ((STInteger)x).v;
                 i_y = ((STInteger)y).v;
                 b = (i_x > i_y);
-                result = new STBoolean(ctx.vm, b);
+                result = ctx.vm.newBoolean(b);
                 break;
             case Integer_GE:
                 y = ctx.pop();
@@ -80,7 +80,7 @@ public class STInteger extends STObject {
                 i_x = ((STInteger)x).v;
                 i_y = ((STInteger)y).v;
                 b = (i_x >= i_y);
-                result = new STBoolean(ctx.vm, b);
+                result = ctx.vm.newBoolean(b);
                 break;
             case Integer_EQ:
                 y = ctx.pop();
@@ -88,7 +88,7 @@ public class STInteger extends STObject {
                 i_x = ((STInteger)x).v;
                 i_y = ((STInteger)y).v;
                 b = (i_x == i_y);
-                result = new STBoolean(ctx.vm, b);
+                result = ctx.vm.newBoolean(b);
                 break;
             case Integer_MOD:
                 y = ctx.pop();

@@ -86,11 +86,11 @@ public class VirtualMachine {
                     ctx.push(ctx.receiver);
                     break;
                 case Bytecode.TRUE:
-                    STBoolean t = new STBoolean(this, true);
+                    STBoolean t = newBoolean(true);
                     ctx.push(t);
                     break;
                 case Bytecode.FALSE:
-                    STBoolean f = new STBoolean(this, false);
+                    STBoolean f = newBoolean(false);
                     ctx.push(f);
                     break;
                 case Bytecode.PUSH_CHAR:
@@ -122,8 +122,14 @@ public class VirtualMachine {
                 case Bytecode.PUSH_LITERAL:
                     index = consumeShort(ctx.ip); //get index of the literal
                     String s = ctx.compiledBlock.literals[index];
-                    STString literal = new STString(this, s);
-                    ctx.push(literal);
+                    STString literal;
+                    if(ctx.compiledBlock.literalsAsSTStrings[index] != null){
+                        ctx.push(ctx.compiledBlock.literalsAsSTStrings[index]);
+                    } else{
+                        literal = newString(s);
+                        ctx.compiledBlock.literalsAsSTStrings[index] = literal;
+                        ctx.push(literal);
+                    }
                     break;
                 case Bytecode.PUSH_GLOBAL:
                     index = consumeShort(ctx.ip);
@@ -162,9 +168,9 @@ public class VirtualMachine {
                     if(methodcalled.isClassMethod && !(recv instanceof STMetaClassObject))
                         error("ClassMessageSentToInstance", methodcalled.name.substring(7) + " is a class method sent to instance of " + recv.getSTClass().getName());
 
-            /*        if(!methodcalled.isClassMethod && (recv instanceof STMetaClassObject))
+                    if(!methodcalled.isClassMethod && (recv instanceof STMetaClassObject))
                         error("MessageNotUnderstood", methodcalled.name + " is an instance method sent to class object " + recv.getSTClass().getName());
-*/
+
                     if ( methodcalled.isPrimitive() ) {
                         result = methodcalled.primitive.perform(ctx, nArgs);
                         if ( result!=null ) {

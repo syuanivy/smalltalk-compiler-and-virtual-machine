@@ -2,7 +2,6 @@ package smalltalk.vm.primitive;
 
 import org.antlr.symtab.*;
 import org.stringtemplate.v4.ST;
-import smalltalk.compiler.parser.SmalltalkParser;
 import smalltalk.compiler.semantics.STBlock;
 import smalltalk.compiler.semantics.STClass;
 import smalltalk.compiler.semantics.STMethod;
@@ -99,54 +98,64 @@ public class STCompiledBlock {
     public final boolean isClassMethod;
 
 	public STCompiledBlock(STBlock blk) {
-        if(blk instanceof STMethod){
-            this.isClassMethod = ((STMethod)blk).isClassMethod;
-        }else{
-            this.isClassMethod = false;
-        }
+        isClassMethod = isClassMethod(blk);
 
-        if(this.isClassMethod)
-            name = "static " + blk.getName();
-        else
-            name = blk.getName();
+        name = getMethodName(blk);
         qualifiedName = blk.getQualifiedName(">>");
-        errorName = getErrorName(blk, ">>");
-        STClass classSymbol = blk.getEnclosingClass(STClass.class);
-       // enclosingClass = new STMetaClassObject(classSymbol);?? how to initialize this?
-        int Nargs = 0;
-        int Nlocals = 0;
+        errorName = getErrorName(blk, ">>"); //T>>f
 
+        //iterate through all symbols in the STBlock to find number of args and locals
+        int Nargs = 0; //nargs and nlocals are final
+        int Nlocals = 0;
         for(Symbol s: blk.getSymbols()){
-            if(s instanceof ParameterSymbol){
+            if(s instanceof ParameterSymbol)
                 Nargs++;
-            }
-            else if(s instanceof VariableSymbol){
+            else if(s instanceof VariableSymbol)
                 Nlocals++;
-            }
         }
         nargs = Nargs;
         nlocals = Nlocals;
 
-        blocks = new STCompiledBlock[blk.numNestedBlocks];
-        if(blk.isMethod()){
+        blocks = getNestedBlocks(blk);
+        primitive = getPrimitive(blk);
+    }
+
+    private STCompiledBlock[] getNestedBlocks(STBlock blk) {
+        STCompiledBlock[] nested = new STCompiledBlock[blk.numNestedBlocks];
+        if(blk.isMethod()){ //all nested blocks resides within a method
             List<Scope> list = blk.getAllNestedScopes();
             int index;
             for(Scope b : list){
                 if( b instanceof  STBlock){
-                    index = ((STBlock) b).index;
-                    blocks[index] = ((STBlock)b).compiledBlock;
+                    index = ((STBlock) b).index;// index initialized when blk creaked
+                    nested[index] = ((STBlock)b).compiledBlock;
                 }
             }
         }
+        return nested;
+    }
 
-        if(blk instanceof STPrimitiveMethod)
-            primitive = ((STPrimitiveMethod)blk).primitive;
+    private String getMethodName(STBlock blk) {
+        if(isClassMethod)
+            return "static " + blk.getName();
         else
-            primitive = null;
-	}
+            return blk.getName();
+    }
 
+    private boolean isClassMethod(STBlock blk) {
+        if(blk instanceof STMethod){
+            return ((STMethod)blk).isClassMethod; //defined when exit classMethod
+        }else{
+            return false;
+        }
+    }
 
-
+    private Primitive getPrimitive(STBlock blk) {
+        if(blk instanceof STPrimitiveMethod)
+            return ((STPrimitiveMethod)blk).primitive;
+        else
+            return null;
+    }
 
     public boolean isPrimitive() { return primitive!=null; }
 
@@ -170,8 +179,7 @@ public class STCompiledBlock {
 					);
 		return template.render();
 	}
-
-    //for ClassMethodSentToInstance
+    //for ClassMethodSentToInstance, get Classname >> function name
     public String getErrorName(STBlock blk, String scopePathSeparator) {
         return blk.getEnclosingClass(STClass.class).getName() + scopePathSeparator + this.name;
     }

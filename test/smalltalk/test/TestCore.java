@@ -958,7 +958,7 @@ public class TestCore extends BaseTest {
 		String input =
 			"class T [\n" +
 			"    |x|\n" +
-			"    initialize: v [x:=v]\n"+
+			"    initialize: v [x := v]\n"+
 			"    f [^x]\n" +
 			"]\n" +
 			"^(T new: 99) f\n";

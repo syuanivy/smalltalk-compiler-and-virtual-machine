@@ -1,7 +1,9 @@
 class Object [
     "Class methods come first then instance methods
+
     Note that we allow class method inheritance (unlike Java) so 'super new'
     refers to the #new method of the superclass.
+
     All objects are initialized automatically by #new, unlike ST-80, but like
     Squeak.
     "
@@ -18,7 +20,7 @@ class Object [
        ^self basicNew initialize
     ]
 
-    new: x [
+    class new: x [
        "Create new object with an arg. Requires that you implement initialize: x
         like: initialize [ super initialize. your-init-code. ^self ]"
        ^self new initialize: x
@@ -111,7 +113,7 @@ class Number : Object [
 ]
 
 class Integer : Number [
-   "this object has no fields visible from smalltalk code, backed by Java class STInteger"
+   "this object has no fields visible from smalltalk code and is backed by Java class STInteger"
    + y <primitive:#Integer_ADD>
    - y <primitive:#Integer_SUB>
    * y <primitive:#Integer_MULT>
@@ -126,6 +128,7 @@ class Integer : Number [
    ]
    hash [ ^self ]
    mod: n <primitive:#Integer_MOD>
+   asFloat <primitive:#Integer_ASFLOAT>
 ]
 
 class Float : Number [
@@ -215,7 +218,5 @@ class ReadStream : Stream [
 ]
 
 class TranscriptStream : WriteStream [
-
-
     show: o <primitive:#TranscriptStream_SHOW>
 ]

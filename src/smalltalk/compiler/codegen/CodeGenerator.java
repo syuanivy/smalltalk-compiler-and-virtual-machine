@@ -379,13 +379,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         compiledBlock.bytecode = code.bytes();
         compiledBlock.literals = blockToStrings.get(scope).toArray();
         compiledBlock.literalsAsSTStrings = new STString[compiledBlock.literals.length];
-        literalAsString();
         return compiledBlock;
     }
 
-    private void literalAsString() {
-
-    }
 
     public int getLiteralIndex(String text) {
 /*        StringTable strings = blockToStrings.get(currentScope);

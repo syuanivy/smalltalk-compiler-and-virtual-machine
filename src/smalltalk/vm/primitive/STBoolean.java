@@ -21,7 +21,7 @@ public class STBoolean extends STObject {
             case Boolean_NOT :
                 Boolean not = Boolean.logicalXor(true,receiverObj.b);
                 ctx.sp--;
-                result = new STBoolean(vm, not);
+                result = vm.newBoolean(not);
                 break;
             case Boolean_IFTRUE:
                 arg1 = ctx.pop();

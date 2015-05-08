@@ -1,12 +1,8 @@
 package smalltalk.vm.primitive;
 
-import com.sun.xml.internal.ws.protocol.soap.MessageCreationException;
-import org.antlr.symtab.Utils;
 import smalltalk.vm.VirtualMachine;
 import smalltalk.vm.exceptions.MessageNotUnderstood;
 
-import java.util.Arrays;
-import java.util.List;
 
 /** */
 public class STArray extends STObject {

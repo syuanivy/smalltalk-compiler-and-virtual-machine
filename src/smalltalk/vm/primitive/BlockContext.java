@@ -30,7 +30,7 @@ import smalltalk.vm.VirtualMachine;
  *  for simplicity reasons.
  */
 public class BlockContext {
-	public static final int INITIAL_STACK_SIZE = 100;
+	public static final int INITIAL_STACK_SIZE = 10;
 
 	/** An indicator object that indicates a method has already returned
 	 *  so that we can return again later from inside a closure that is
@@ -163,7 +163,7 @@ public class BlockContext {
         for (int i = 0; i < locals.length; i++) {
             locals[i]=vm.nil();
         }
-        for (int j = compiledBlock.nargs-1; j >= 0; j--){
+        for (int j = compiledBlock.nargs-1; j >= 0; j--){ //in reversed order
             locals[j] = vm.ctx.pop();
         }
         this.stack = new STObject[INITIAL_STACK_SIZE];
@@ -192,6 +192,7 @@ public class BlockContext {
 	 *  msg."  interpret self as the right object (the receiver of
 	 *  the enclosing method).
 	 */
+
 	public BlockContext(VirtualMachine vm, BlockDescriptor descriptor) {
         this.vm = vm;
         this.compiledBlock = descriptor.block;
@@ -206,9 +207,21 @@ public class BlockContext {
     }
 
 	public void push(STObject o) {
+        doubleStackSize(); //if sp == stack.length -1;
         stack[++sp] = o;
 	}
-	public STObject pop() {
+
+    private void doubleStackSize() {
+        if(sp == stack.length - 1){
+            STObject[] stackDoubled = new STObject[2*stack.length];
+            for(int i = 0; i< stack.length; i++)
+                stackDoubled[i] = stack[i];
+            stack = stackDoubled;
+
+        }
+    }
+
+    public STObject pop() {
         return stack[sp--];
     }
 	public STObject top() {
@@ -222,6 +235,7 @@ public class BlockContext {
         else
             return true;
     }
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
