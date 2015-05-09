@@ -62,13 +62,11 @@ public class SetScope extends SmalltalkBaseListener {
         popScope();
     }
 
-    public void pushScope(Scope scope) {
-        if ( scope==null ) return;
-        currentScope = scope;
-    }
+    public void pushScope(Scope scope) { currentScope = scope;}
 
     public void popScope() {
-        if ( currentScope==null ) return;
+        if ( currentScope==null )
+            return;
         currentScope = currentScope.getEnclosingScope();
     }
 }

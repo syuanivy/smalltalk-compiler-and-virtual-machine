@@ -1,6 +1,5 @@
 package smalltalk.compiler.semantics;
 
-import org.antlr.symtab.MethodSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import smalltalk.vm.primitive.Primitive;
 
@@ -15,6 +14,4 @@ public class STPrimitiveMethod extends STMethod {
         this.primitive = Enum.valueOf(Primitive.class, primitiveName);
     }
 
-    @Override
-    public int nlocals() { return 0; }
 }

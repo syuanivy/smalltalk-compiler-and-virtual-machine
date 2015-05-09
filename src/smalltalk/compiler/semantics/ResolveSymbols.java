@@ -2,8 +2,7 @@ package smalltalk.compiler.semantics;
 
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.VariableSymbol;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
+
 import org.antlr.v4.runtime.misc.NotNull;
 import smalltalk.compiler.Compiler;
 import smalltalk.compiler.parser.SmalltalkParser;
@@ -35,9 +34,8 @@ public class ResolveSymbols extends SetScope {
     private boolean isResolvable(String s) {
         Symbol v = currentScope.resolve(s);
         boolean res = false;
-        if ( v == null ){
+        if ( v == null )
             compiler.error("unknown variable "+s+" in "+currentScope.toQualifierString(">>"));
-        }
 
         else if ( !(v instanceof VariableSymbol) )
             compiler.error("symbol "+v+ " is not a variable/argument in "+

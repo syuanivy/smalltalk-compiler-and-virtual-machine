@@ -71,20 +71,6 @@ public class DefineSymbols extends SmalltalkBaseListener {
         }
     }
 
-/*
-    //fields
-    @Override
-    public void enterInstanceVars(@NotNull SmalltalkParser.InstanceVarsContext ctx) {
-        List<TerminalNode> ids = ctx.localVars().ID();
-        for(TerminalNode id: ids){
-            STInstanceVar i = new STInstanceVar(id.getText());
-            i.setScope(currentScope);
-            currentScope.define(i);
-        }
-    }
-*/
-
-
     @Override
     public void exitClassMethod(@NotNull SmalltalkParser.ClassMethodContext ctx) {
         ctx.method().scope.isClassMethod = true;
@@ -96,8 +82,6 @@ public class DefineSymbols extends SmalltalkBaseListener {
         ctx.methodBlock().args = new ArrayList<>();
     }
 
-
-
     @Override
     public void enterOperatorMethod(@NotNull SmalltalkParser.OperatorMethodContext ctx) {
         ctx.methodBlock().selector = ctx.bop().getText();
@@ -105,7 +89,6 @@ public class DefineSymbols extends SmalltalkBaseListener {
         ctx.methodBlock().args = new ArrayList<>();
         ctx.methodBlock().args.add(arg.getText());
     }
-
 
     @Override
     public void enterKeywordMethod(@NotNull SmalltalkParser.KeywordMethodContext ctx) {
@@ -121,7 +104,6 @@ public class DefineSymbols extends SmalltalkBaseListener {
                 ctx.methodBlock().args.add(arg.getText());
         }
     }
-
 
     @Override
     public void enterSmalltalkMethodBlock(@NotNull SmalltalkParser.SmalltalkMethodBlockContext ctx) {
@@ -175,18 +157,6 @@ public class DefineSymbols extends SmalltalkBaseListener {
         currentMethod = m;
         m.setEnclosingScope(currentScope);
     }
-
-/*
-    @Override
-    public void enterLvalue(@NotNull SmalltalkParser.LvalueContext ctx) {
-        VariableSymbol v = new VariableSymbol(ctx.ID().getText());
-        currentScope.define(v);
-        v.setScope(currentScope);
-        v.setDefNode(ctx);
-    }
-
-*/
-
 
     @Override
     public void enterBlock(@NotNull SmalltalkParser.BlockContext ctx) {
@@ -249,15 +219,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
     }
 
 
-    private void pushScope(Scope s) {
-        currentScope = s;
-       // System.out.println("pushing :"+currentScope.getName());
-    }
+    private void pushScope(Scope s) { currentScope = s; }
 
-    private void popScope() {
-      //  System.out.println("poping :"+currentScope.getName());
-        currentScope = currentScope.getEnclosingScope();
-      //  System.out.println("currentScope :"+currentScope.getName());
-
-    }
+    private void popScope() { currentScope = currentScope.getEnclosingScope();}
 }

@@ -104,10 +104,10 @@ id returns [Symbol sym] // could be class, field, arg ref etc...
 	;
 
 literal
-	:	NUMBER                               #numberLiteral
-	|	CHAR                                 #charLiteral
-	|	STRING                               #stringLiteral
-	|	predefined                           #predefinedLiteral
+	:	NUMBER                              #numberLiteral
+	|	CHAR                                #charLiteral
+	|	STRING                              #stringLiteral
+	|	predefined                          #predefinedLiteral
 	;
 
 /** Like #(1 2 3) except we can have expressions in array not just literals */
