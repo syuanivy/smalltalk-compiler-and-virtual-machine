@@ -79,8 +79,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     public Code visitMain(@NotNull SmalltalkParser.MainContext ctx) {
         if(ctx.body() == null || ctx.body().getChildCount() == 0)
             return Code.None;
-        pushScope(ctx.classScope);
-        pushScope(ctx.scope);
+        pushScope(ctx.classScope); //class
+        pushScope(ctx.scope); //method
         Code  code = visit(ctx.body());
         if(compiler.genDbg)
             code = Code.join(code,dbgAtEndMain(ctx.stop));
@@ -89,10 +89,10 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         code = code.join(Code.of(Bytecode.SELF));     //self
         code = code.join(Compiler.method_return());   //return
         ctx.scope.compiledBlock = getCompiledBlock(ctx.scope, code);
-        popScope();
-        popScope();
-        //System.out.println(Bytecode.disassemble(ctx.scope.compiledBlock, 0));
+        popScope(); //method
+        popScope();  //class
 
+        //System.out.println(Bytecode.disassemble(ctx.scope.compiledBlock, 0));
         return Code.None;
     }
 
