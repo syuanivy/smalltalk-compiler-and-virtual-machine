@@ -1,12 +1,15 @@
 package smalltalk.compiler.semantics;
 
 
-import org.antlr.symtab.*;
+import org.antlr.symtab.ParameterSymbol;
+import org.antlr.symtab.Scope;
+import org.antlr.symtab.Utils;
+import org.antlr.symtab.VariableSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import smalltalk.compiler.Compiler;
 import smalltalk.compiler.parser.SmalltalkBaseListener;
 import smalltalk.compiler.parser.SmalltalkParser;
-import smalltalk.compiler.Compiler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +104,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
         List<TerminalNode> args = ctx.ID();
         ctx.methodBlock().args = new ArrayList<>();
         for(TerminalNode arg : args) {
-                ctx.methodBlock().args.add(arg.getText());
+                ctx.methodBlock().args.add(arg.getText()); // inconsistent indentation
         }
     }
 

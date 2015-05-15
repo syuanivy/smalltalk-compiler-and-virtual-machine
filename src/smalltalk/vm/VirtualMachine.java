@@ -2,10 +2,32 @@ package smalltalk.vm;
 
 
 import org.antlr.symtab.Utils;
-
 import smalltalk.compiler.semantics.STSymbolTable;
-import smalltalk.vm.exceptions.*;
-import smalltalk.vm.primitive.*;
+import smalltalk.vm.exceptions.BlockCannotReturn;
+import smalltalk.vm.exceptions.ClassMessageSentToInstance;
+import smalltalk.vm.exceptions.IndexOutOfRange;
+import smalltalk.vm.exceptions.InternalVMException;
+import smalltalk.vm.exceptions.MessageNotUnderstood;
+import smalltalk.vm.exceptions.MismatchedBlockArg;
+import smalltalk.vm.exceptions.StackUnderflow;
+import smalltalk.vm.exceptions.TypeError;
+import smalltalk.vm.exceptions.UndefinedGlobal;
+import smalltalk.vm.exceptions.UnknownClass;
+import smalltalk.vm.exceptions.UnknownField;
+import smalltalk.vm.exceptions.VMException;
+import smalltalk.vm.primitive.BlockContext;
+import smalltalk.vm.primitive.BlockDescriptor;
+import smalltalk.vm.primitive.Primitive;
+import smalltalk.vm.primitive.STArray;
+import smalltalk.vm.primitive.STBoolean;
+import smalltalk.vm.primitive.STCharacter;
+import smalltalk.vm.primitive.STCompiledBlock;
+import smalltalk.vm.primitive.STFloat;
+import smalltalk.vm.primitive.STInteger;
+import smalltalk.vm.primitive.STMetaClassObject;
+import smalltalk.vm.primitive.STNil;
+import smalltalk.vm.primitive.STObject;
+import smalltalk.vm.primitive.STString;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -145,6 +167,12 @@ public class VirtualMachine {
                 case Bytecode.POP:
                     ctx.pop();
                     break;
+
+				// send/send_super are more or less the same:
+//				case Bytecode.SEND:
+//				case Bytecode.SEND_SUPER:
+//					sendMessage(op == Bytecode.SEND_SUPER);
+
                 case Bytecode.SEND:
                     nArgs = consumeShort(ctx.ip);
                     firstArg = ctx.sp - nArgs + 1;
@@ -194,6 +222,8 @@ public class VirtualMachine {
 
                     checkReturned(returned);
 
+					// you are jumping all the way up but must set enclosingContext=RETURNED all the way up.
+					// added unit test testAttemptDoubleReturn3() showing failure.
                     BlockContext returnToCtx = ctx.enclosingMethodContext.invokingContext;
 
                     if(returnToCtx == null)

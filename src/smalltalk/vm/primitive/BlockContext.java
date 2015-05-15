@@ -163,11 +163,13 @@ public class BlockContext {
         for (int i = 0; i < locals.length; i++) {
             locals[i]=vm.nil();
         }
+		// probably not the right place to copy args.  It is a "separate concern" and best done by VM not a ctor
         for (int j = compiledBlock.nargs-1; j >= 0; j--){ //in reversed order
             locals[j] = vm.ctx.pop();
         }
         this.stack = new STObject[INITIAL_STACK_SIZE];
         this.enclosingContext  = null;
+		this.enclosingMethodContext = this;	// assume method context by default; this context is the method context
     }
 
 	/** Create a BlockContext from a {@link BlockDescriptor} as a
@@ -194,6 +196,8 @@ public class BlockContext {
 	 */
 
 	public BlockContext(VirtualMachine vm, BlockDescriptor descriptor) {
+		// better to reuse ctor:
+		//this(vm, descriptor.compiledBlock, descriptor.receiver);
         this.vm = vm;
         this.compiledBlock = descriptor.block;
         this.receiver = descriptor.receiver;

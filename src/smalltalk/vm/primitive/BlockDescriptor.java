@@ -61,6 +61,8 @@ public class BlockDescriptor extends STObject {
         this.block = blk;
         enclosingContext = activeContext;
         enclosingMethodContext = activeContext.enclosingMethodContext;
+		// if method, need this.enclosingMethodContext = activeContext;
+
         receiver = activeContext.receiver;
     }
 
@@ -72,6 +74,24 @@ public class BlockDescriptor extends STObject {
         STObject arg1, arg2;
         BlockContext bc;
         STObject result = null;
+		// not bad. here is how i do it
+		/*
+		switch ( primitive ) {
+			case BlockDescriptor_VALUE_2_ARGS : // [block] value: arg value: arg2
+				ctx.sp -= 3;
+				vm.invokeBlock(receiver, new STObject[]{ctx.stack[firstArg], ctx.stack[firstArg + 1]});
+				break;
+			case BlockDescriptor_VALUE_1_ARG : // [block] value: arg
+				ctx.sp -= 2;
+				vm.invokeBlock(receiver, new STObject[]{ctx.stack[firstArg]});
+				break;
+			case BlockDescriptor_VALUE : // [block] value
+				ctx.sp -= 1;
+				vm.invokeBlock(receiver, new STObject[0]);
+				break;
+		}
+		*/
+
         switch ( primitive ) {
             case BlockDescriptor_VALUE:
                 bc = new BlockContext(vm, (receiver));

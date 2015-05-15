@@ -1,6 +1,10 @@
 package smalltalk.vm.primitive;
 
-import org.antlr.symtab.*;
+import org.antlr.symtab.ParameterSymbol;
+import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Utils;
+import org.antlr.symtab.VariableSymbol;
 import org.stringtemplate.v4.ST;
 import smalltalk.compiler.semantics.STBlock;
 import smalltalk.compiler.semantics.STClass;
@@ -64,6 +68,7 @@ public class STCompiledBlock {
     public String errorName;
 
 	/** Of which class is this block a member? */
+	// You are right! we don't need this field. I removed from my project too :)
 	public STMetaClassObject enclosingClass;
 
 	/** The set of strings and symbols referenced by the {@link #bytecode} field. */
@@ -107,6 +112,10 @@ public class STCompiledBlock {
         //iterate through all symbols in the STBlock to find number of args and locals
         int Nargs = 0; //nargs and nlocals are final
         int Nlocals = 0;
+		// STBlock has:
+//		public int nargs() { return getNumberOfParameters(); }
+//		public int nlocals() { return getNumberOfVariables() - nargs(); }
+		// don't need this:
         for(Symbol s: blk.getSymbols()){
             if(s instanceof ParameterSymbol)
                 Nargs++;
@@ -116,6 +125,7 @@ public class STCompiledBlock {
         nargs = Nargs;
         nlocals = Nlocals;
 
+		// I set these in getCompiledBlock() of CodeGenerator
         blocks = getNestedBlocks(blk);
         primitive = getPrimitive(blk);
     }

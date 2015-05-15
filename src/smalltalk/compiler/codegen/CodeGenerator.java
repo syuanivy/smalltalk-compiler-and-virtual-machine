@@ -1,20 +1,21 @@
 package smalltalk.compiler.codegen;
 
-import org.antlr.symtab.*;
-
+import org.antlr.symtab.FieldSymbol;
+import org.antlr.symtab.ParameterSymbol;
+import org.antlr.symtab.Scope;
+import org.antlr.symtab.StringTable;
+import org.antlr.symtab.Symbol;
+import org.antlr.symtab.VariableSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
-
+import org.antlr.v4.runtime.tree.TerminalNode;
+import smalltalk.compiler.Compiler;
 import smalltalk.compiler.parser.SmalltalkBaseVisitor;
 import smalltalk.compiler.parser.SmalltalkParser;
-import smalltalk.compiler.Compiler;
 import smalltalk.compiler.semantics.STBlock;
 import smalltalk.compiler.semantics.STClass;
 import smalltalk.misc.Utils;
-
-
 import smalltalk.vm.Bytecode;
 import smalltalk.vm.primitive.STCompiledBlock;
 import smalltalk.vm.primitive.STString;
@@ -156,6 +157,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
         StringBuffer keyword = new StringBuffer();
 
+		// i use a helper here :)
+		// 		String selector = Utils.join(Utils.map(keywords, TerminalNode::getText), "");
+
         for(int i = 0; i < keywords.size(); i++){
             keyword.append(keywords.get(i).getText());
             receiver.join(visit(binaries.get(i + 1))); //binaries[0] is dedicated to receiver
@@ -170,6 +174,39 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return receiver;
 
     }
+
+	// these methods are more or less the same minus self vs super so i combine:
+	/*
+	public Code sendKeywordMsg(ParserRuleContext receiver,
+							   Code receiverCode,
+							   List<SmalltalkParser.BinaryExpressionContext> args,
+							   List<TerminalNode> keywords)
+	{
+		Code code = receiverCode;
+		// push all args
+		for (SmalltalkParser.BinaryExpressionContext ectx : args) {
+			Code elCode = visit(ectx);
+			code = code.join(elCode);
+		}
+		// compute selector and gen a msg send
+		String selector = Utils.join(Utils.map(keywords, TerminalNode::getText), "");
+		int literalIndex = getLiteralIndex(selector);
+		Code send;
+		if ( receiver instanceof TerminalNode &&
+			 receiver.getStart().getType()==SmalltalkParser.SUPER )
+		{
+			send = Compiler.send_super(args.size(), literalIndex);
+		}
+		else {
+			send = Compiler.send(args.size(), literalIndex);
+		}
+		if ( compiler.genDbg ) {
+			send = Code.join(dbg(keywords.get(0).getSymbol()), send);
+		}
+		code = code.join(send);
+		return code;
+	}
+	*/
 
     @Override
     public Code visitSuperKeywordSend(@NotNull SmalltalkParser.SuperKeywordSendContext ctx) {
@@ -298,6 +335,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return receiver;
     }
 
+	// not sure why you need this. I just use
+	//String bop = bops.get(i).getText();
+
     private Code sendBop(SmalltalkParser.BopContext ctx) {
         String keyword;
         if(ctx.opchar().size() == 0) // "-" only
@@ -421,6 +461,41 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         }
         return code;
     }
+
+	//not bad, but here is my solution
+	/*
+	@Override
+	public Code visitLiteral(@NotNull SmalltalkParser.LiteralContext ctx) {
+		Code code = Code.None;
+		Token lit = ctx.getStart();
+		switch ( lit.getType() ) {
+			case SmalltalkParser.NUMBER :
+				code = Compiler.push_number(lit.getText());
+				break;
+			case SmalltalkParser.CHAR :
+				code = Compiler.push_char(lit.getText().charAt(1));
+				break;
+			case SmalltalkParser.STRING :
+				String stripped = lit.getText();
+				stripped = stripped.substring(1,stripped.length()-1);
+				code = Compiler.push_literal(getLiteralIndex(stripped));
+				break;
+			case SmalltalkParser.NIL :
+				code = Compiler.push_nil();
+				break;
+			case SmalltalkParser.SELF :
+				code = Compiler.push_self();
+				break;
+			case SmalltalkParser.TRUE :
+				code = Compiler.push_true();
+				break;
+			case SmalltalkParser.FALSE :
+				code = Compiler.push_false();
+				break;
+		}
+		return code;
+	}
+	*/
 
     public Code push_literal(ParserRuleContext ctx) {
         Code code = Code.None;

@@ -539,6 +539,79 @@ public class TestBlocks extends BaseTest {
 		assertEquals(expecting, result);
 	}
 
+	@Test public void testAttemptDoubleReturn3() {
+		/*
+		0000:  dbg '<string>', 8:0              MainClass>>main[nil][]
+		0007:  dbg '<string>', 8:7              MainClass>>main[nil][]
+		0014:  push_global    'T'               MainClass>>main[nil][class T]
+		0017:  send           0, 'new'          MainClass>>main[nil][], T>>new[][]
+		0000:  dbg 'image.st', 20:22            MainClass>>main[nil][], T>>new[][]
+		0007:  dbg 'image.st', 20:13            MainClass>>main[nil][], T>>new[][]
+		0014:  self                             MainClass>>main[nil][], T>>new[][class T]
+		0015:  send           0, 'basicNew'     MainClass>>main[nil][], T>>new[][a T]
+		0020:  send           0, 'initialize'   MainClass>>main[nil][], T>>new[][], T>>initialize[][]
+		0000:  self                             MainClass>>main[nil][], T>>new[][], T>>initialize[][a T]
+		0001:  dbg 'image.st', 29:16            MainClass>>main[nil][], T>>new[][], T>>initialize[][a T]
+		0008:  return                           MainClass>>main[nil][], T>>new[][a T]
+		0025:  dbg 'image.st', 20:7             MainClass>>main[nil][], T>>new[][a T]
+		0032:  return                           MainClass>>main[nil][a T]
+		0022:  store_local    0, 0              MainClass>>main[a T][a T]
+		0027:  pop                              MainClass>>main[a T][]
+		0028:  dbg '<string>', 9:2              MainClass>>main[a T][]
+		0035:  push_local     0, 0              MainClass>>main[a T][a T]
+		0040:  send           0, 'f'            MainClass>>main[a T][], T>>f[][]
+		0000:  self                             MainClass>>main[a T][], T>>f[][a T]
+		0001:  block          0                 MainClass>>main[a T][], T>>f[][a T, f-block0]
+		0004:  dbg '<string>', 3:13             MainClass>>main[a T][], T>>f[][a T, f-block0]
+		0011:  send           1, 'g:'           MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][]
+		0000:  dbg '<string>', 4:13             MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][]
+		0007:  block          0                 MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][g:-block0]
+		0010:  store_field    0                 MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][g:-block0]
+		0013:  pop                              MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][]
+		0014:  dbg '<string>', 4:27             MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][]
+		0021:  push_local     0, 0              MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][f-block0]
+		0026:  send           0, 'value'        MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][], T>>f-block0[][]
+		0000:  push_int       99                MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][], T>>f-block0[][99]
+		0005:  dbg '<string>', 3:17             MainClass>>main[a T][], T>>f[][], T>>g:[f-block0][], T>>f-block0[][99]
+		0012:  return                           MainClass>>main[a T][99]
+		0045:  pop                              MainClass>>main[a T][]
+		0046:  dbg '<string>', 10:2             MainClass>>main[a T][]
+		0053:  push_local     0, 0              MainClass>>main[a T][a T]
+		0058:  send           0, 'h'            MainClass>>main[a T][], T>>h[][]
+		0000:  dbg '<string>', 5:10             MainClass>>main[a T][], T>>h[][]
+		0007:  push_field     0                 MainClass>>main[a T][], T>>h[][g:-block0]
+		0010:  send           0, 'value'        MainClass>>main[a T][], T>>h[][], T>>g:-block0[][]
+		0000:  push_int       88                MainClass>>main[a T][], T>>h[][], T>>g:-block0[][88]
+		0005:  dbg '<string>', 4:17             MainClass>>main[a T][], T>>h[][], T>>g:-block0[][88]
+		0012:  return
+		 */
+		String input =
+		"class T [\n" +
+		"    |x|\n" +
+		"    f [ self g: [^99].]\n" + 		// eval code that sends a block to g that returns 99 from f.
+		"    g: blk [ x:=[^88]. blk value ]\n" +  // save block from g that returns from g then eval block that forces f to return 99.
+		"    h [ x value ]\n" +             // try to return from g again
+		"]\n" +
+		"|t|\n" +
+		"t := T new.\n" +
+		"t f.\n" +
+		"t h";                              // try to return from g again"
+		String expecting =
+		"BlockCannotReturn: T>>g:-block0 can't trigger return again from method T>>g:\n" +
+		"    at                                  g:>>g:-block0[][](<string>:4:17)      executing 0012:  return           \n" +
+		"    at                                           T>>h[][](<string>:5:10)      executing 0010:  send           0, 'value'\n" +
+		"    at                             MainClass>>main[a T][](<string>:10:2)      executing 0058:  send           0, 'h'\n";
+		String result = "";
+		try {
+			execAndCheck(input, expecting);
+		}
+		catch (BlockCannotReturn bcr) {
+			result = bcr.toString();
+		}
+		assertEquals(expecting, result);
+	}
+
+
 	@Test public void returnFromNestedCallViaBlock() {
 		/*
 		0000:  dbg '<string>', 12:10            MainClass>>main[][]
