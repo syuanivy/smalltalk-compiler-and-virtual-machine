@@ -1,4 +1,4 @@
-package src.smalltalk.test;
+package smalltalk.test;
 
 import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Test;
@@ -464,7 +464,7 @@ public class TestCodeGen extends smalltalk.test.BaseTest {
     @Test public void testFullLinkedListWithDbg() throws IOException {
         boolean genDbg = true;
         STSymbolTable symtab = Run.compileCore(genDbg);
-        Run.compile(symtab, "src/smalltalk/test/linkedlist.st", genDbg);
+        Run.compile(symtab, "smalltalk/test/linkedlist.st", genDbg);
         VirtualMachine vm = new VirtualMachine(symtab);
         STMetaClassObject linkedListClass = vm.lookupClass("LinkedList");
         String expectedOutputFileName = Run.getImageURL("smalltalk/test/linkedlist.st-teststring-dbg.txt").getFile();

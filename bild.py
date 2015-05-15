@@ -26,7 +26,7 @@ def init():
 
 def parser():
     antlr4(srcdir="src/smalltalk/compiler", trgdir="gen",
-           package="smalltalk.compiler",
+           package="smalltalk.compiler.parser",
            version="4.5",
            args=["-visitor","-listener"])
 

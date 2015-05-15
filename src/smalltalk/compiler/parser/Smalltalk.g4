@@ -1,7 +1,6 @@
 grammar Smalltalk;
 
 @header {
-package smalltalk.compiler.parser;
 import smalltalk.compiler.semantics.*;
 import org.antlr.symtab.*;
 }
